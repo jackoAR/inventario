@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/blank}">
+
+<head>
+<meta charset="UTF-8">
+<title>Equipo</title>
+</head>
+
+<body>
+
+	<div layout:fragment="contenedor">
+		<section>
+
+			<div id="page-wrapper">
+				<div class="container-fluid">
+
+					<div class="row">
+						<div class="col-lg-12">
+							<h1 class="page-header">Equipo</h1>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="mb-3">
+								<label class="form-label">Corredor</label> <select
+									id="corredorId" onchange="enviarCorredorId(this.value)"
+									class="form-select">
+									<option value="0">-Seleccione-</option>
+									<option th:each="corredor: ${listaCorredor}"
+										th:text="${corredor.Nombre}" th:value="${corredor.Id}"></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-lg-12">
+							<div class="mb-3">
+								<label class="form-label">Parada</label> <select id="paradaId"
+									class="form-select" onchange="enviarIdParada(this.value)">
+									<option value="0">-Seleccione-</option>
+									<option></option>
+								</select>
+							</div>
+						</div>
+					</div>
+
+					<div id="agregar" class="row" style="display: none;">
+						<div class="col-lg-12">
+							<a th:href="@{/nuevoequipo}"><button type="button"
+									class="btn btn-success">
+									<i class="fa fa-plus"></i>
+								</button></a>
+						</div>
+					</div>
+					<!-- /.row -->
+					<div id="equipoTableContainer" class="table-responsive">
+
+						<!-- La tabla será insertada aquí dinámicamente -->
+
+					</div>
+					
+					<!-- La imagen será mostrada aquí dinámicamente -->
+					<div id="imageDisplay">
+						<img id="imgContainer"
+							style="display: none; max-width: 100%; height: auto;"
+							alt="Foto del equipo"
+							src="">
+					</div>
+					
+				</div>
+			</div>
+
+			<script>
+		function enviarCorredorId(corredorId) {
+			if (corredorId !== "0") {
+				// Llamada fetch para enviar el id al controlador
+				fetch(`/api/photos/cargarSelectParada/${corredorId}`, {
+					method: 'GET', // Usa GET si solo estás enviando el id como parte de la URL
+					headers: {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					}
+				})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Error al cargar las paradas');
+						}
+						return response.json();
+					})
+					.then(paradas => {
+						// Aquí puedes procesar los datos que te devuelve el servidor (por ejemplo, las paradas)
+						const paradaSelect = document.getElementById("paradaId");
+						
+						// Limpiamos las opciones previas
+		                paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
+		                
+		                paradas.forEach(parada => {
+		                    const option = document.createElement("option");
+		                    option.value = parada.id;
+		                    option.text = parada.nombre;
+		                    paradaSelect.appendChild(option);
+		                });
+		                
+					})
+					.catch(error => console.error('Error:', error));
+			}else{
+				const paradaSelect = document.getElementById("paradaId");
+	            paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
+			}
+		}
+		
+		function enviarIdParada(paradaId) {
+		    if (paradaId !== "0") {
+		        // Hacemos la solicitud al controlador
+		        fetch(`/filtroequipo/${paradaId}`, {
+		            method: 'GET',
+		            headers: {
+		            	'Accept': 'text/html', // se espera recibir un fragmento HTML
+		            }
+		        })
+		        .then(response => {
+		            if (!response.ok) {
+		                throw new Error('Error al cargar los equipos');
+		            }
+		            return response.text(); // Procesamos la respuesta como text
+		            
+		        })
+		        .then(html => {
+		        	document.getElementById('agregar').style.display = 'block';
+		        	document.getElementById('equipoTableContainer').style.display = 'block';
+		            // Reemplazamos la tabla actual con la nueva tabla
+		            document.getElementById('equipoTableContainer').innerHTML = html;
+		        })
+		        .catch(error => {
+		            console.error('Error:', error);
+		        });
+		    } else {
+		        // Si paradaId es "0", ocultamos la tabla
+		        document.getElementById('equipoTableContainer').style.display = 'none';
+		    }
+		}
+		
+		function mostrarFoto(fila) {
+		    // Obtener el número de serie y fkParada del equipo desde la fila seleccionada		    
+		    const fkParada = fila.getAttribute("data-fkparada");
+		    const serial = fila.getAttribute("data-serial");
+
+		    // Construimos la URL para enviar al controlador que retorna la foto
+		    //const url = `/api/photos/view/${fkParada}/${serial}`;
+
+		    // Hacemos la solicitud al controlador para obtener la foto
+		    fetch(`/view/${fkParada}/${serial}`, {
+		        method: 'GET',
+		        headers: {
+		            'Accept': 'image/jpeg, image/png, image/gif'  // Esperamos recibir una imagen
+		        }
+		    })
+		    .then(response => {
+		        if (!response.ok) {
+		            throw new Error('Error al cargar la foto');
+		        }
+		        return response.blob();  // Recibimos la imagen como un blob
+		    })
+		    .then(blob => {
+		        // Crear un URL para la imagen y mostrarla en un <img>
+		        const imgUrl = window.URL.createObjectURL(blob);
+		        const imgElement = document.getElementById('imgContainer');  // Seleccionamos el contenedor donde se mostrará la imagen
+		        imgElement.src = imgUrl;  // Cambiamos el atributo src del <img> para que muestre la imagen
+		        imgElement.style.display = 'block';  // Aseguramos que el contenedor esté visible
+		    })
+		    .catch(error => {
+		        console.error('Error:', error);
+		    });
+		}
+		
+	</script>
+
+		</section>
+	</div>
+
+
+</body>
+
+</html>

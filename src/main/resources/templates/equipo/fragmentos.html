@@ -1,0 +1,54 @@
+<!-- Fragmento Thymeleaf para la tabla de equipos -->
+
+<table class="table table-striped table-bordered table-hover"
+	th:fragment="equipoTable">
+	<thead>
+		<tr>
+			<th>Id</th>
+			<th>Tipo</th>
+			<th>Marca</th>
+			<th>Hostname</th>
+			<th>Modelo</th>
+			<th>IP</th>
+			<th>Serial</th>
+			<th>Versión</th>
+			<th>Disponible</th>
+			<th>Usado</th>
+			<th>Disponibles2</th>
+			<th>Usado3</th>
+			<th>Estado</th>
+			<th>Criticidad</th>
+			<th>Registro de Cambio</th>
+			<th>Mantenimineto</th>
+			<th>Acción</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-serial="${equipo.Serial}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFoto(this)">
+			<td th:text="${equipo.idEquipo}"></td>
+			<td th:text="${equipo.TipoEquipo}"></td>
+			<td th:text="${equipo.Marca}"></td>
+			<td th:text="${equipo.Host_Name}" class="center"></td>
+			<td th:text="${equipo.Modelo}"></td>
+			<td th:text="${equipo.IP}"></td>
+			<td th:text="${equipo.Serial}"></td>
+			<td th:text="${equipo.Version}"></td>
+			<td th:text="${equipo.Disponibles}"></td>
+			<td th:text="${equipo.Usado}"></td>
+			<td th:text="${equipo.Disponibles2}"></td>
+			<td th:text="${equipo.Usado3}"></td>
+			<td th:text="${equipo.Estado}"></td>
+			<td th:text="${equipo.Criticidad}"></td>
+			<td th:text="${equipo.RegistroDeCambio}"></td>
+			<td th:text="${equipo.Mantenimiento}"></td>
+
+			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}"> <i
+					class="fas fa-calendar"></i>
+			</a> <a th:href="@{/eliminarequipo/}+${equipo.idEquipo}"
+				onclick="return confirm('Seguro desea eliminar el registro?');">
+					<i class="fa fa-trash"></i>
+			</a></td>
+
+		</tr>
+	</tbody>
+</table>

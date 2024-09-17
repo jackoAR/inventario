@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{plantilla/blank}">
+
+<head>
+	<meta charset="utf-8">
+
+</head>
+
+<body>
+
+
+	<div layout:fragment="contenedor">
+		<section>
+			<!-- Page Content -->
+			<div id="page-wrapper">
+				<section class="container-fluid">
+					<div class="row">
+						<div class="col-lg-12">
+							<h1 class="page-header">Nuevo Equipo</h1>
+						</div>
+						<!-- /.col-lg-12 -->
+					</div>
+					<!-- /.row -->
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-lg-4">
+								<form th:action="@{/guardarequipo}" th:object="${nuevo}" method="post">
+
+									<input type="hidden" th:field="*{idEquipo}">
+
+									<div class="mb-3">
+										<label class="form-label">Corredor</label>
+										<select class="form-select" th:field="*{fkParada.fkCorredor.Id}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="corredor: ${listaCorredor}" th:text="${corredor.Nombre}"
+												th:value="${corredor.Id}"></option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label class="form-label">Parada</label>
+										<select class="form-select" th:field="*{fkParada.id}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="parada: ${listaParada}" th:text="${parada.nombre}"
+												th:value="${parada.id}"></option>
+										</select>
+									</div>
+
+									<div class="mb-3">
+										<label class="form-label">Criticidad</label>
+										<select class="form-select" th:field="*{Criticidad}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="criticidad: ${criticidades}" th:text="${criticidad}"
+												th:value="${criticidad}"></option>
+										</select>
+									</div>
+
+
+									<label>Disponibles</label>
+									<input type="text" th:field="*{Disponibles}" class="form-control">
+									<label>Disponibles2</label>
+									<input type="text" th:field="*{Disponibles2}" class="form-control">
+
+									<div class="mb-3">
+										<label class="form-label">Estado</label>
+										<select class="form-select" th:field="*{Estado}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="estado: ${estados}" th:text="${estado}"
+												th:value="${estado}"></option>
+										</select>
+									</div>
+
+									<label>HostName</label>
+									<input id="hostname" type="text" th:field="*{Host_Name}" class="form-control">
+									<label>IP</label>
+									<input type="text" th:field="*{IP}" class="form-control">
+									<label>Mantenimiento</label>
+									<input 
+									type="date" 
+									th:field="*{Mantenimiento}"
+									class="form-control Input-Date">
+									<label>Marca</label>
+									<input type="text" th:field="*{Marca}" class="form-control">
+									<label>Modelo</label>
+									<input type="text" th:field="*{Modelo}" class="form-control">
+									<label>Registro de Cambio</label>
+									<input 
+									type="date" 
+									th:field="*{RegistroDeCambio}" 
+									class="form-control Input-Date">
+									<label>Serial</label>
+									<input type="text" th:field="*{Serial}" class="form-control">
+
+									<div class="mb-3">
+										<label class="form-label">Tipo Equipo</label>
+										<select class="form-select" th:field="*{TipoEquipo}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="tipo: ${tipos}" th:text="${tipo}" th:value="${tipo}">
+											</option>
+										</select>
+									</div>
+
+									<label>Usado</label>
+									<input type="text" th:field="*{Usado}" class="form-control">
+									<label>Usado3</label>
+									<input type="text" th:field="*{Usado3}" class="form-control">
+									<label>Versión</label>
+									<input type="text" th:field="*{Version}" class="form-control">
+
+									<hr>
+									<center><button type="submit" class="btn btn-default">Guardar</button></center>
+
+								</form>
+
+								<script>
+									document.addEventListener('DOMContentLoaded', (event) => {
+
+										// Selecciona todos los campos de entrada con la clase 'Input-Date'
+										var inputElements = document.querySelectorAll('input.Input-Date');
+
+										inputElements.forEach((inputElement) => {
+											// Obtén el valor actual del atributo 'value'
+											var valorActual = inputElement.getAttribute('value');
+
+											// Verifica que el valor actual no esté vacío
+											if (valorActual) {
+												// Transforma el valor de la fecha
+												var transformedDate = transformDate(valorActual);
+
+												// Carga el valor transformado en el input de fecha
+												inputElement.value = transformedDate;
+												
+												// Verifica el valor actualizado
+												console.log('Fecha transformada y establecida:', inputElement);
+											} else {
+												console.log('El valor del campo de entrada fecha está vacío en la BD.');
+											}
+										});
+
+										// Función para convertir una fecha en formato DD/MM/YY a YYYY-MM-DD
+										function transformDate(value) {
+											// Dividir el valor por '/'
+											var parts = value.split('/');
+											if (parts.length === 3) {
+												// Asume que el valor está en formato DD/MM/YY
+												var day = parts[0].padStart(2, '0');
+												var month = parts[1].padStart(2, '0');
+												var year = '20' + parts[2]; // Asume que el año es de dos dígitos y lo convierte a cuatro dígitos
+
+												// Retornar la fecha en formato YYYY-MM-DD
+												return `${year}-${month}-${day}`;
+											}
+											return 'Formato_Desconocido'; // Retornar una cadena si el formato no es reconocido
+										}
+									});
+								</script>
+
+								<!-- /.container-fluid -->
+
+								<!-- /#page-wrapper -->
+
+
+							</div>
+						</div>
+					</div>
+					<!-- /#wrapper -->
+
+				</section>
+			</div>
+		</section>
+	</div>
+
+
+
+</body>
+
+</html>
