@@ -80,16 +80,18 @@ public class ImagenController implements Serializable {
 		}
 	}
 
-	@GetMapping("/list/{folderName}")
-	public String listPhotos(@PathVariable String folderName, Model model) {
+	@GetMapping("/list/")
+	public ResponseEntity<List<String>> listPhotos(@PathVariable String folderName) {
 		try {
 			List<String> photos = minioService.listPhotosInFolder(folderName); // Obtiene fotos desde la carpeta
-			model.addAttribute("photos", photos);
-			model.addAttribute("folderName", folderName); // El nombre de la carpeta para mostrar en la vista
-			return "/equipo/listaEquipo"; // Nombre de la vista Thymeleaf que presentará las fotos
+//			model.addAttribute("photos", photos);
+//			model.addAttribute("folderName", folderName); // El nombre de la carpeta para mostrar en la vista
+//			return "/equipo/listaEquipo"; // Nombre de la vista Thymeleaf que presentará las fotos
+			return new ResponseEntity<>(photos, HttpStatus.OK);
 		} catch (Exception e) {
-			model.addAttribute("errorMessage", "Error al cargar las fotos.");
-			return "error"; // Página de error si algo falla
+//			model.addAttribute("errorMessage", "Error al cargar las fotos.");
+//			return "error"; // Página de error si algo falla
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -139,45 +141,29 @@ public class ImagenController implements Serializable {
 	 * }
 	 */
 
-	
 	@GetMapping("/view/{fkParada}/{serial}")
-	public ResponseEntity<byte[]> viewPhoto(@PathVariable Integer fkParada, @PathVariable String serial) {
+	public ResponseEntity<String> viewPhoto(@PathVariable Integer fkParada, @PathVariable String serial) {
 	    try {
-	        // Buscar el nombre de la carpeta para la parada específica
-	        Parada parada = srvParada.buscarPorId(fkParada);
-	        String folderName = parada.getNombre();
-	        
-	        // Listar las fotos en la carpeta de la parada
-	        List<String> photos = minioService.listPhotosInFolder(folderName);
-	        
-	        // Buscar el archivo que coincida con el número de serie
-	        String photoFilename = photos.stream()
-	                .filter(name -> name.contains(serial))
-	                .findFirst()
-	                .orElseThrow(() -> new Exception("Foto no encontrada para el serial: " + serial));
-	        
-	        // Descargar la foto utilizando el nombre del archivo encontrado
-	        InputStream inputStream = minioService.downloadPhoto(folderName + "/" + photoFilename);
-	        byte[] photoBytes = inputStream.readAllBytes();
-	        
-	        // Determinar el tipo de contenido basado en la extensión del archivo
-	        String contentType = "image/jpeg"; // Valor por defecto
-	        if (photoFilename.endsWith(".png")) {
-	            contentType = "image/png";
-	        } else if (photoFilename.endsWith(".gif")) {
-	            contentType = "image/gif";
+	    	// Aquí puedes imprimir los valores recibidos para comprobar
+		    System.out.println("fkParada: " + fkParada);
+		    System.out.println("Serial: " + serial);
+		    
+		    Parada parada = srvParada.buscarPorId(fkParada);
+		    
+		    if (parada == null) {
+	            // Si no se encuentra la parada, devolver 404
+	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	        }
-	        
-	        HttpHeaders headers = new HttpHeaders();
-	        headers.setContentType(MediaType.parseMediaType(contentType));
-	        
-	        // Retornar la imagen como bytes con su contentType correcto
-	        return new ResponseEntity<>(photoBytes, headers, HttpStatus.OK);
-	        
-	    } catch (Exception e) {
-	        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	    }
+		    
+		    String nombreParada = parada.getNombre();
+	        // Devolver la parada encontrada al cliente en formato JSON
+		    return new ResponseEntity<>("Servidor dice: Parámetros recibidos correctamente: " + nombreParada, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
 	}
+	
 	 
 
 	/*

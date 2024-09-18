@@ -57,17 +57,25 @@ public class ImagenServiceImpl implements IImagenService {
 	public List<String> listPhotosInFolder(String folderName) throws Exception {
 		// TODO Auto-generated method stub
 		List<String> photos = new ArrayList<>();
-
-		Iterable<Result<Item>> results = minioClient
-				.listObjects(ListObjectsArgs.builder().bucket(bucketName).prefix(folderName + "/") // Carpeta específica
-						.recursive(true) // Listar objetos dentro de la carpeta
+		
+		System.out.println("Listando todas las fotos en el bucket: " + bucketName);
+		
+		Iterable<Result<Item>> results = minioClient.listObjects(
+				ListObjectsArgs.builder()
+						.bucket(bucketName)
+						.prefix(folderName + "/") // Carpeta específica
+						.recursive(true) // Listar todos los objetos sin usar prefijo
 						.build());
 
 		for (Result<Item> result : results) {
 			Item item = result.get();
+			System.out.println("Encontrado: " + item.objectName()); // Verifica qué archivos se listan
 			photos.add(item.objectName());
+						
 		}
-
+		
+		System.out.println("Total de fotos encontradas: " + photos.size());
+		
 		return photos;
 	}
 

@@ -140,37 +140,30 @@
 		    }
 		}
 		
-		function mostrarFoto(fila) {
-		    // Obtener el número de serie y fkParada del equipo desde la fila seleccionada		    
-		    const fkParada = fila.getAttribute("data-fkparada");
-		    const serial = fila.getAttribute("data-serial");
-
-		    // Construimos la URL para enviar al controlador que retorna la foto
-		    //const url = `/api/photos/view/${fkParada}/${serial}`;
-
-		    // Hacemos la solicitud al controlador para obtener la foto
-		    fetch(`/view/${fkParada}/${serial}`, {
-		        method: 'GET',
-		        headers: {
-		            'Accept': 'image/jpeg, image/png, image/gif'  // Esperamos recibir una imagen
-		        }
-		    })
-		    .then(response => {
-		        if (!response.ok) {
-		            throw new Error('Error al cargar la foto');
-		        }
-		        return response.blob();  // Recibimos la imagen como un blob
-		    })
-		    .then(blob => {
-		        // Crear un URL para la imagen y mostrarla en un <img>
-		        const imgUrl = window.URL.createObjectURL(blob);
-		        const imgElement = document.getElementById('imgContainer');  // Seleccionamos el contenedor donde se mostrará la imagen
-		        imgElement.src = imgUrl;  // Cambiamos el atributo src del <img> para que muestre la imagen
-		        imgElement.style.display = 'block';  // Aseguramos que el contenedor esté visible
-		    })
-		    .catch(error => {
-		        console.error('Error:', error);
-		    });
+		function mostrarFoto(filaTabla){
+			const fkParada = filaTabla.getAttribute('data-fkparada');
+			const serial = filaTabla.getAttribute('data-serial');
+			
+			console.log("fkParada capturado: ", fkParada);
+			console.log("Serial capturado: ", serial);
+			
+			const url = `/api/photos/view/${fkParada}/${serial}`;
+			
+			console.log("URL para enviar:", url);
+			
+			fetch(url)
+	        .then(response => {
+	        	if (!response.ok) {
+	                throw new Error('Error al obtener la parada');
+	            }
+	        	return response.text();
+	        })
+	        .then(parada => {
+	            console.log(parada); // Comprobar la respuesta
+	        })
+	        .catch(error =>{
+	        	console.error('Error:', error);
+	        });
 		}
 		
 	</script>
