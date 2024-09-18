@@ -119,7 +119,7 @@ public class ImagenServiceImpl implements IImagenService {
 		
 		return minioClient.getObject(GetObjectArgs.builder()
 				.bucket(bucketName)
-				.object(fullFilePath)
+				.object(fileName)
 				.build());
 	}
 

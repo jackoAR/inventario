@@ -62,8 +62,8 @@
 
 					<!-- La imagen será mostrada aquí dinámicamente -->
 					<h1>Image Viewer</h1>
-					<div id="imageContainer">
-						<!-- The image will be loaded here -->
+					<div id="foto-container">
+						<!-- Aquí se mostrará la imagen -->
 					</div>
 
 				</div>
@@ -139,7 +139,7 @@
 		    }
 		}
 		
-		function mostrarFotoCopia(filaTabla){
+		function mostrarFoto(filaTabla){
 			const fkParada = filaTabla.getAttribute('data-fkparada');
 			const serial = filaTabla.getAttribute('data-serial');
 			
@@ -150,15 +150,32 @@
 			
 			console.log("URL para enviar:", url);
 			
-			fetch(url)
+			fetch(url,  {
+		        method: 'GET',
+		        headers: {
+		            'Accept': 'image/jpeg,image/png,image/gif' // Esperamos recibir una imagen
+		        }
+			})
 	        .then(response => {
 	        	if (!response.ok) {
 	                throw new Error('Error al obtener la parada');
 	            }
-	        	return response.text();
+	        	return response.blob();
 	        })
-	        .then(parada => {
-	            console.log(parada); // Comprobar la respuesta
+	        .then(imageBlob => {
+		     // Crear una URL para la imagen descargada
+		     const imageObjectURL = URL.createObjectURL(imageBlob);
+     
+		     // Mostrar la imagen en un div con id 'foto-container'
+		     const imgElement = document.createElement('img');
+		     imgElement.src = imageObjectURL;
+		     imgElement.alt = "Imagen del equipo";
+		     imgElement.style.maxWidth = "100%";  // Ajustar tamaño si es necesario
+     
+		     const divContainer = document.getElementById('foto-container');
+		     divContainer.innerHTML = ''; // Limpiar el div antes de insertar la imagen
+		     divContainer.appendChild(imgElement);
+ 			
 	        })
 	        .catch(error =>{
 	        	console.error('Error:', error);
