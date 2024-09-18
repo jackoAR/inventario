@@ -41,15 +41,12 @@ public class ImagenServiceImpl implements IImagenService {
 	}
 
 	@Override
-	public InputStream downloadPhoto(String filename) throws Exception {
-		// TODO Auto-generated method stub
-		return minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(filename).build());
-	}
-
-	@Override
 	public String deletePhoto(String filename) throws Exception {
 		// TODO Auto-generated method stub
-		minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(filename).build());
+		minioClient.removeObject(RemoveObjectArgs.builder()
+				.bucket(bucketName)				
+				.object(filename)
+				.build());
 		return "File deleted successfully: " + filename;
 	}
 
@@ -113,6 +110,17 @@ public class ImagenServiceImpl implements IImagenService {
 	            .stream(inputStreamResource)                       // El InputStreamResource del archivo
 	            .build();
 
+	}
+
+	@Override
+	public InputStream downloadPhoto(String folderName, String fileName) throws Exception {
+		// TODO Auto-generated method stub
+		String fullFilePath = folderName + "/" + fileName;
+		
+		return minioClient.getObject(GetObjectArgs.builder()
+				.bucket(bucketName)
+				.object(fullFilePath)
+				.build());
 	}
 
 }

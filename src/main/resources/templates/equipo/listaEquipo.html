@@ -2,6 +2,7 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{plantilla/blank}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <head>
 <meta charset="UTF-8">
@@ -58,19 +59,17 @@
 						<!-- La tabla será insertada aquí dinámicamente -->
 
 					</div>
-					
+
 					<!-- La imagen será mostrada aquí dinámicamente -->
-					<div id="imageDisplay">
-						<img id="imgContainer"
-							style="display: none; max-width: 100%; height: auto;"
-							alt="Foto del equipo"
-							src="">
+					<h1>Image Viewer</h1>
+					<div id="imageContainer">
+						<!-- The image will be loaded here -->
 					</div>
-					
+
 				</div>
 			</div>
 
-			<script>
+			<script th:inline="javascript">
 		function enviarCorredorId(corredorId) {
 			if (corredorId !== "0") {
 				// Llamada fetch para enviar el id al controlador
@@ -140,7 +139,7 @@
 		    }
 		}
 		
-		function mostrarFoto(filaTabla){
+		function mostrarFotoCopia(filaTabla){
 			const fkParada = filaTabla.getAttribute('data-fkparada');
 			const serial = filaTabla.getAttribute('data-serial');
 			
@@ -166,6 +165,31 @@
 	        });
 		}
 		
+		function mostrarFotoNNN(fila) {
+			
+			const fkParada = fila.getAttribute("data-fkparada");
+		    const serial = fila.getAttribute("data-serial");
+
+		    // Construimos la URL para enviar al controlador que retorna la foto
+		    const urlParam = `/api/photos/view/${fkParada}/${serial}`;		
+          
+            $.ajax({
+                url: urlParam,
+                type: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(data) {
+                    var img = document.createElement('img');
+                    img.src = URL.createObjectURL(data);
+                    $('#imageContainer').append(img);
+                },
+                error: function() {
+                    $('#imageContainer').text('Error loading image');
+                }
+            });
+        };
+				
 	</script>
 
 		</section>

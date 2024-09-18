@@ -1,26 +1,19 @@
 package com.epmtpq.inventario;
 
-import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.epmtpq.inventario.model.Parada;
 import com.epmtpq.inventario.service.IImagenService;
-import com.epmtpq.inventario.service.IParadaService;
-
 import io.minio.MinioClient;
 
 @SpringBootTest
 class InventarioApplicationTests {
 	
-	@Autowired
-	private IParadaService srvparada;
 	@Autowired
 	private IImagenService srvimagen;
 	@MockBean

@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.epmtpq.inventario.model.Corredor;
-import com.epmtpq.inventario.model.FileResponse;
 import com.epmtpq.inventario.model.Parada;
 import com.epmtpq.inventario.model.ParadaDTO;
 import com.epmtpq.inventario.service.ICorredorService;
@@ -57,10 +54,15 @@ public class ImagenController implements Serializable {
 		}
 	}
 
-	@GetMapping("/download/{filename}")
-	public ResponseEntity<byte[]> downloadPhoto(@PathVariable String filename) {
+	@GetMapping("/download/{fkParada}/{filename}")
+	public ResponseEntity<byte[]> downloadPhoto(@PathVariable Integer fkParada, @PathVariable String filename) {
 		try {
-			InputStream inputStream = minioService.downloadPhoto(filename);
+			//Busca la Parada por Id de parada
+			Parada parada = srvParada.buscarPorId(fkParada);
+			//Obtiene el nombre de la Parada
+		    String folderName = parada.getNombre();
+			
+			InputStream inputStream = minioService.downloadPhoto(folderName,filename);
 			byte[] content = inputStream.readAllBytes();
 			return ResponseEntity.ok()
 					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
@@ -80,7 +82,7 @@ public class ImagenController implements Serializable {
 		}
 	}
 
-	@GetMapping("/list/")
+	@GetMapping("/list/{folderName}")
 	public ResponseEntity<List<String>> listPhotos(@PathVariable String folderName) {
 		try {
 			List<String> photos = minioService.listPhotosInFolder(folderName); // Obtiene fotos desde la carpeta
@@ -142,24 +144,44 @@ public class ImagenController implements Serializable {
 	 */
 
 	@GetMapping("/view/{fkParada}/{serial}")
-	public ResponseEntity<String> viewPhoto(@PathVariable Integer fkParada, @PathVariable String serial) {
+	public ResponseEntity<byte[]> viewPhoto(@PathVariable Integer fkParada, @PathVariable String serial) {
 	    try {
 	    	// Aquí puedes imprimir los valores recibidos para comprobar
 		    System.out.println("fkParada: " + fkParada);
 		    System.out.println("Serial: " + serial);
 		    
+		    //busca la parada por el id de la parada
 		    Parada parada = srvParada.buscarPorId(fkParada);
+		    //obtiene el nombre de la parada
+		    String folderName = parada.getNombre();
 		    
-		    if (parada == null) {
-	            // Si no se encuentra la parada, devolver 404
-	            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		    // Listar las fotos en la carpeta de la parada
+	        List<String> photos = minioService.listPhotosInFolder(folderName);
+		    
+	        // Buscar el archivo que coincida con el número de serie
+	        String photoFilename = photos.stream()
+	                .filter(name -> name.contains(serial))
+	                .findFirst()
+	                .orElseThrow(() -> new Exception("Foto no encontrada para el serial: " + serial));
+	        
+	        InputStream inputStream = minioService.downloadPhoto(folderName, photoFilename);
+	        byte[] photoBytes = inputStream.readAllBytes();
+	        
+	     // Determine the content type based on the file extension
+	        String contentType = "image/jpeg"; // Default value
+	        if (photoFilename.endsWith(".png")) {
+	            contentType = "image/png";
+	        } else if (photoFilename.endsWith(".gif")) {
+	            contentType = "image/gif";
 	        }
 		    
-		    String nombreParada = parada.getNombre();
-	        // Devolver la parada encontrada al cliente en formato JSON
-		    return new ResponseEntity<>("Servidor dice: Parámetros recibidos correctamente: " + nombreParada, HttpStatus.OK);
+	        HttpHeaders headers = new HttpHeaders();
+	        headers.setContentType(MediaType.parseMediaType(contentType));
+	        
+	        return new ResponseEntity<>(photoBytes, headers, HttpStatus.OK);
+		    
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
 	}
