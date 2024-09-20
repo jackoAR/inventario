@@ -35,6 +35,7 @@ public class Equipo implements Serializable{/**
 	private int Usado;
 	private int Disponibles2;
 	private int Usado3;
+	private String PathFoto;
 	
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;

@@ -25,9 +25,10 @@
 					<div class="panel-body">
 						<div class="row">
 							<div class="col-lg-4">
-								<form th:action="@{/guardarequipo}" th:object="${nuevo}" method="post">
+								<form th:action="@{/guardarequipo}" th:object="${nuevo}" method="post" enctype="multipart/form-data">
 
 									<input type="hidden" th:field="*{idEquipo}">
+									<input type="hidden" name="nombreCarpeta" th:value="${nombreCarpeta}">
 
 									<div class="mb-3">
 										<label class="form-label">Corredor</label>
@@ -107,7 +108,9 @@
 									<input type="text" th:field="*{Usado3}" class="form-control">
 									<label>Versión</label>
 									<input type="text" th:field="*{Version}" class="form-control">
-
+									<label>Subir Foto</label>
+									<input type="file" name="file" class="form-control"/>
+									
 									<hr>
 									<center><button type="submit" class="btn btn-default">Guardar</button></center>
 
@@ -154,6 +157,8 @@
 											return 'Formato_Desconocido'; // Retornar una cadena si el formato no es reconocido
 										}
 									});
+									
+									
 								</script>
 
 								<!-- /.container-fluid -->

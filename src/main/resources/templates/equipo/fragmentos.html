@@ -42,7 +42,7 @@
 			<td th:text="${equipo.RegistroDeCambio}"></td>
 			<td th:text="${equipo.Mantenimiento}"></td>
 
-			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}"> <i
+			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"> <i
 					class="fas fa-calendar"></i>
 			</a> <a th:href="@{/eliminarequipo/}+${equipo.idEquipo}"
 				onclick="return confirm('Seguro desea eliminar el registro?');">

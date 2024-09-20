@@ -33,10 +33,17 @@ public class ImagenServiceImpl implements IImagenService {
 	private String bucketName;
 
 	@Override
-	public String uploadPhoto(String filename, MultipartFile file) throws Exception {
+	public String uploadPhoto(String folder, String filename, MultipartFile file) throws Exception {
 		// TODO Auto-generated method stub
-		minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(filename)
-				.stream(file.getInputStream(), file.getSize(), -1).contentType(file.getContentType()).build());
+		String fullPath = folder + "/" + filename;
+		
+		minioClient.putObject(PutObjectArgs
+				.builder()
+				.bucket(bucketName)
+				.object(fullPath)
+				.stream(file.getInputStream(), file.getSize(), -1)
+				.contentType(file.getContentType())
+				.build());
 		return "File uploaded successfully: " + filename;
 	}
 
@@ -114,13 +121,11 @@ public class ImagenServiceImpl implements IImagenService {
 
 	@Override
 	public InputStream downloadPhoto(String folderName, String fileName) throws Exception {
-		// TODO Auto-generated method stub
-		String fullFilePath = folderName + "/" + fileName;
-		
+		// TODO Auto-generated method stub		
 		return minioClient.getObject(GetObjectArgs.builder()
 				.bucket(bucketName)
 				.object(fileName)
 				.build());
 	}
-
+	
 }

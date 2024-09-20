@@ -12,7 +12,7 @@ public interface IImagenService {
 //	public List<Imagen> listaImagen();
 //	public Imagen buscarPorId(Integer id);
 //	public void eliminarImagen(Integer id);
-	public String uploadPhoto(String filename, MultipartFile file) throws Exception;
+	public String uploadPhoto(String folder, String filename, MultipartFile file) throws Exception;
 	public InputStream downloadPhoto(String folderName, String fileName) throws Exception;
 	public String deletePhoto(String filename) throws Exception;
 	public List<String> listPhotosInFolder(String folderName) throws Exception;

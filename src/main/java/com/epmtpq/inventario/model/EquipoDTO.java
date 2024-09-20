@@ -22,6 +22,7 @@ public class EquipoDTO {
 	private int Usado;
 	private int Disponibles2;
 	private int Usado3;
+	private String PathFoto;
 	
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;
@@ -45,7 +46,7 @@ public class EquipoDTO {
 			String Version, int Disponibles, int Usado, int Disponibles2, int Usado3,
 			com.epmtpq.inventario.model.Equipo.EstadoEquipo Estado,
 			com.epmtpq.inventario.model.Equipo.EquipoCriticidad Criticidad, LocalDate RegistroDeCambio,
-			LocalDate Mantenimiento, com.epmtpq.inventario.model.Equipo.TipoEquipo TipoEquipo, Integer fkParada) {
+			LocalDate Mantenimiento, com.epmtpq.inventario.model.Equipo.TipoEquipo TipoEquipo, Integer fkParada, String PathFoto) {
 		
 		this.idEquipo = idEquipo;
 		this.Serial = Serial;
@@ -64,6 +65,7 @@ public class EquipoDTO {
 		this.Mantenimiento = Mantenimiento;
 		this.TipoEquipo = TipoEquipo;
 		this.fkParada = fkParada;
+		this.PathFoto = PathFoto;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -202,6 +204,13 @@ public class EquipoDTO {
     public void setFkParada(Integer fkParada) {
         this.fkParada = fkParada;
     }
-	
 
+	public String getPathFoto() {
+		return PathFoto;
+	}
+
+	public void setPathFoto(String pathFoto) {
+		PathFoto = pathFoto;
+	}
+	
 }

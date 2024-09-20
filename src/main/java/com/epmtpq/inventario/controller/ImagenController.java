@@ -44,15 +44,15 @@ public class ImagenController implements Serializable {
 	@Autowired
 	private IParadaService srvParada;
 
-	@PostMapping("/upload")
-	public ResponseEntity<String> uploadPhoto(@RequestParam("file") MultipartFile file) {
-		try {
-			String filename = file.getOriginalFilename();
-			return ResponseEntity.ok(minioService.uploadPhoto(filename, file));
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
-		}
-	}
+//	@PostMapping("/upload")
+//	public ResponseEntity<String> uploadPhoto(@RequestParam("file") MultipartFile file) {
+//		try {
+//			String filename = file.getOriginalFilename();
+//			return ResponseEntity.ok(minioService.uploadPhoto(filename, file));
+//		} catch (Exception e) {
+//			return ResponseEntity.status(500).body("Error uploading file: " + e.getMessage());
+//		}
+//	}
 
 	@GetMapping("/download/{fkParada}/{filename}")
 	public ResponseEntity<byte[]> downloadPhoto(@PathVariable Integer fkParada, @PathVariable String filename) {

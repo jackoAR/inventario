@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.epmtpq.inventario.model.Equipo;
 import com.epmtpq.inventario.model.EquipoDTO;
 import com.epmtpq.inventario.model.Parada;
 import com.epmtpq.inventario.service.ICorredorService;
 import com.epmtpq.inventario.service.IEquipoService;
+import com.epmtpq.inventario.service.IImagenService;
 import com.epmtpq.inventario.service.IParadaService;
 
 @Controller
@@ -31,6 +35,8 @@ public class EquipoController implements Serializable {
 	private ICorredorService srvCorredor;
 	@Autowired
 	private IParadaService srvParada;
+	@Autowired
+	private IImagenService srvImage;
 
 	private static final long serialVersionUID = 1L;
 
@@ -42,8 +48,7 @@ public class EquipoController implements Serializable {
 		return "/equipo/listaEquipo";
 
 	}
-	
-	
+
 	/*
 	 * @GetMapping("/filtroequipo/{paradaId}") public
 	 * ResponseEntity<List<EquipoDTO>> filtrarEquipo(@PathVariable("paradaId")
@@ -66,32 +71,30 @@ public class EquipoController implements Serializable {
 	 * 
 	 * }
 	 */
-	 
-	  @GetMapping("/filtroequipo/{paradaId}") 
-	  public String filtrarEquipo(@PathVariable("paradaId") Integer paradaId, Model model) {
-	  
-	  Parada parada = srvParada.buscarPorId(paradaId);
-	  
-	  if (parada == null) {
-		  return "No se encontró la parada"; 
-		  }
-	  
-	  List<EquipoDTO> equipoDTOs = parada.getListaEquipo().stream() .map(equipo ->
-	  new EquipoDTO(equipo.getIdEquipo(), equipo.getSerial(), equipo.getMarca(),
-	  equipo.getHost_Name(), equipo.getModelo(), equipo.getIP(),
-	  equipo.getVersion(), equipo.getDisponibles(), equipo.getUsado(),
-	  equipo.getDisponibles2(), equipo.getUsado3(), equipo.getEstado(),
-	  equipo.getCriticidad(), equipo.getRegistroDeCambio(),
-	  equipo.getMantenimiento(), equipo.getTipoEquipo(), equipo.getFkParada().getId()))
-	  .collect(Collectors.toList());
-	  
-	  model.addAttribute("ListaEquipo", equipoDTOs);
-	  
-	  return "/equipo/fragmentos :: equipoTable";
-	  
-	  }
-	 
-	 
+
+	@GetMapping("/filtroequipo/{paradaId}")
+	public String filtrarEquipo(@PathVariable("paradaId") Integer paradaId, Model model) {
+
+		Parada parada = srvParada.buscarPorId(paradaId);
+
+		if (parada == null) {
+			return "No se encontró la parada";
+		}
+
+		List<EquipoDTO> equipoDTOs = parada.getListaEquipo().stream()
+				.map(equipo -> new EquipoDTO(equipo.getIdEquipo(), equipo.getSerial(), equipo.getMarca(),
+						equipo.getHost_Name(), equipo.getModelo(), equipo.getIP(), equipo.getVersion(),
+						equipo.getDisponibles(), equipo.getUsado(), equipo.getDisponibles2(), equipo.getUsado3(),
+						equipo.getEstado(), equipo.getCriticidad(), equipo.getRegistroDeCambio(),
+						equipo.getMantenimiento(), equipo.getTipoEquipo(), equipo.getFkParada().getId(),
+						equipo.getPathFoto()))
+				.collect(Collectors.toList());
+
+		model.addAttribute("ListaEquipo", equipoDTOs);
+
+		return "/equipo/fragmentos :: equipoTable";
+
+	}
 
 	@GetMapping("/nuevoequipo")
 	public String crearEquipo(Model model) {
@@ -105,11 +108,15 @@ public class EquipoController implements Serializable {
 		return "/equipo/nuevoEquipo";
 	}
 
-	@GetMapping("/nuevoequipo/{idEquipo}")
-	public String editarEquipo(@PathVariable("idEquipo") Integer idEquipo, Model model) {
+	@GetMapping("/nuevoequipo/{idEquipo}/{fkParada}")
+	public String editarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable Integer fkParada,
+			Model model) {
 		Equipo existe = null;
-		if (idEquipo > 0) {
+		String nombreCarpeta = "";
+		if (idEquipo > 0 && fkParada > 0) {
 			existe = srv.buscarPorId(idEquipo);
+			Parada parada = srvParada.buscarPorId(fkParada);
+			nombreCarpeta = parada.getNombre();
 		} else {
 			return "redirect:/listaequipo";
 		}
@@ -125,13 +132,36 @@ public class EquipoController implements Serializable {
 		model.addAttribute("criticidades", Equipo.EquipoCriticidad.values());
 		model.addAttribute("estados", Equipo.EstadoEquipo.values());
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
+		model.addAttribute("nombreCarpeta", nombreCarpeta);
 		return "/equipo/nuevoEquipo";
 
 	}
 
 	@PostMapping("/guardarequipo")
-	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo) {
-		srv.insertarEquipo(nuevo);
+	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo,
+			@RequestParam("nombreCarpeta") String nombreCarpeta, @RequestParam("file") MultipartFile file) {
+
+		try {
+				if (!file.isEmpty()) {
+					
+					String nombreOriginal = file.getOriginalFilename();
+					
+					srvImage.uploadPhoto(nombreCarpeta, nombreOriginal, file);
+					
+					System.out.println("Archivo subido con éxito: " + nombreOriginal);
+					
+					srv.insertarEquipo(nuevo);
+					System.out.println("Carpeta: " + nombreCarpeta);					
+					
+				}else {
+					
+					System.out.println("El archivo está vacío.");					
+				}
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
 		return "redirect:/listaequipo";
 	}
 
