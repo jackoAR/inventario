@@ -5,42 +5,46 @@
 	<thead>
 		<tr>
 			<th>Id</th>
-			<th>Tipo</th>
-			<th>Marca</th>
+			<th>Cod. Bien</th>
 			<th>Hostname</th>
+			<th>Tipo</th>
+			<th>Marca</th>			
 			<th>Modelo</th>
-			<th>IP</th>
 			<th>Serial</th>
 			<th>Versión</th>
-			<th>Disponible</th>
-			<th>Usado</th>
-			<th>Disponibles2</th>
-			<th>Usado3</th>
-			<th>Estado</th>
+			<th>IP</th>			
+			<th>Puertos Disponibles Fibra</th>
+			<th>Puertos Usado Fibra</th>
+			<th>Puertos Disponibles Cobre</th>
+			<th>Puertos Usados Cobre</th>
 			<th>Criticidad</th>
+			<th>Estado</th>			
 			<th>Registro de Cambio</th>
-			<th>Mantenimineto</th>
+			<th>Mantenimiento</th>
+			<th>Última Actividad</th>
 			<th>Acción</th>
 		</tr>
 	</thead>
 	<tbody>
 		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-serial="${equipo.Serial}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFoto(this)">
 			<td th:text="${equipo.idEquipo}"></td>
+			<td th:text="${equipo.Cod_Bien}"></td>
+			<td th:text="${equipo.Host_Name}"></td>
 			<td th:text="${equipo.TipoEquipo}"></td>
-			<td th:text="${equipo.Marca}"></td>
-			<td th:text="${equipo.Host_Name}" class="center"></td>
+			<td th:text="${equipo.Marca}"></td>			
 			<td th:text="${equipo.Modelo}"></td>
-			<td th:text="${equipo.IP}"></td>
-			<td th:text="${equipo.Serial}"></td>
+			<td th:text="${equipo.Serial}"></td>			
 			<td th:text="${equipo.Version}"></td>
-			<td th:text="${equipo.Disponibles}"></td>
-			<td th:text="${equipo.Usado}"></td>
-			<td th:text="${equipo.Disponibles2}"></td>
-			<td th:text="${equipo.Usado3}"></td>
-			<td th:text="${equipo.Estado}"></td>
+			<td th:text="${equipo.IP}"></td>
+			<td th:text="${equipo.Puertos_Disponibles_Fibra}"></td>
+			<td th:text="${equipo.Puertos_Usados_Fibra}"></td>
+			<td th:text="${equipo.Puertos_Disponibles_Cobre}"></td>
+			<td th:text="${equipo.Puertos_Usados_Cobre}"></td>
 			<td th:text="${equipo.Criticidad}"></td>
+			<td th:text="${equipo.Estado}"></td>			
 			<td th:text="${equipo.RegistroDeCambio}"></td>
 			<td th:text="${equipo.Mantenimiento}"></td>
+			<td th:text="${equipo.Ult_Actividad}"></td>	
 
 			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"> <i
 					class="fas fa-calendar"></i>

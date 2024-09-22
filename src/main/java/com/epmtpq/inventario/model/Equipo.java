@@ -31,11 +31,12 @@ public class Equipo implements Serializable{/**
 	private String Modelo;
 	private String IP;
 	private String Version;
-	private int Disponibles;
-	private int Usado;
-	private int Disponibles2;
-	private int Usado3;
-	private String PathFoto;
+	private int Puertos_Disponibles_Fibra;
+	private int Puertos_Usados_Fibra;
+	private int Puertos_Disponibles_Cobre;
+	private int Puertos_Usados_Cobre;
+	private String Cod_Bien;
+	private String Ult_Actividad;
 	
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;

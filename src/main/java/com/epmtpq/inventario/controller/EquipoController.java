@@ -82,12 +82,26 @@ public class EquipoController implements Serializable {
 		}
 
 		List<EquipoDTO> equipoDTOs = parada.getListaEquipo().stream()
-				.map(equipo -> new EquipoDTO(equipo.getIdEquipo(), equipo.getSerial(), equipo.getMarca(),
-						equipo.getHost_Name(), equipo.getModelo(), equipo.getIP(), equipo.getVersion(),
-						equipo.getDisponibles(), equipo.getUsado(), equipo.getDisponibles2(), equipo.getUsado3(),
-						equipo.getEstado(), equipo.getCriticidad(), equipo.getRegistroDeCambio(),
-						equipo.getMantenimiento(), equipo.getTipoEquipo(), equipo.getFkParada().getId(),
-						equipo.getPathFoto()))
+				.map(equipo -> new EquipoDTO(
+						equipo.getIdEquipo(), 
+						equipo.getSerial(), 
+						equipo.getMarca(),
+						equipo.getHost_Name(), 
+						equipo.getModelo(), 
+						equipo.getIP(), 
+						equipo.getVersion(),
+						equipo.getPuertos_Disponibles_Fibra(),
+						equipo.getPuertos_Usados_Fibra(),
+						equipo.getPuertos_Disponibles_Cobre(),
+						equipo.getPuertos_Usados_Cobre(),
+						equipo.getCod_Bien(),
+						equipo.getUlt_Actividad(),						
+						equipo.getEstado(), 
+						equipo.getCriticidad(), 
+						equipo.getRegistroDeCambio(),
+						equipo.getMantenimiento(), 
+						equipo.getTipoEquipo(), 
+						equipo.getFkParada().getId()))
 				.collect(Collectors.toList());
 
 		model.addAttribute("ListaEquipo", equipoDTOs);

@@ -43,7 +43,7 @@
 						</div>
 					</div>
 
-					<div id="agregar" class="row" style="display: none;">
+					<div id="agregar" class="row">
 						<div class="col-lg-12">
 							<a th:href="@{/nuevoequipo}"><button type="button"
 									class="btn btn-success">
@@ -123,7 +123,7 @@
 		            
 		        })
 		        .then(html => {
-		        	document.getElementById('agregar').style.display = 'block';
+		        	
 		        	document.getElementById('equipoTableContainer').style.display = 'block';
 		            // Reemplazamos la tabla actual con la nueva tabla
 		            document.getElementById('equipoTableContainer').innerHTML = html;
