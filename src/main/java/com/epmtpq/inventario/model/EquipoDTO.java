@@ -1,6 +1,7 @@
 package com.epmtpq.inventario.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.epmtpq.inventario.model.Equipo.EquipoCriticidad;
 import com.epmtpq.inventario.model.Equipo.EstadoEquipo;
@@ -23,8 +24,12 @@ public class EquipoDTO {
 	private int Puertos_Disponibles_Cobre;
 	private int Puertos_Usados_Cobre;
 	private String Cod_Bien;
-//	private String PathFoto;
 	private String Ult_Actividad;
+	private String PathMinio;
+	private String Descripcion;
+
+	@Column(name = "Ult_Modificacion")
+	private LocalDateTime Ult_Modificacion;
 
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;
@@ -45,10 +50,11 @@ public class EquipoDTO {
 
 	public EquipoDTO(int idEquipo, String Serial, String Marca, String Host_Name, String Modelo, String IP,
 			String Version, int Puertos_Disponibles_Fibra, int Puertos_Usados_Fibra, int Puertos_Disponibles_Cobre,
-			int Puertos_Usados_Cobre, String Cod_Bien, String Ult_Actividad, com.epmtpq.inventario.model.Equipo.EstadoEquipo Estado,
+			int Puertos_Usados_Cobre, String Cod_Bien, String Ult_Actividad,
+			com.epmtpq.inventario.model.Equipo.EstadoEquipo Estado,
 			com.epmtpq.inventario.model.Equipo.EquipoCriticidad Criticidad, LocalDate RegistroDeCambio,
-			LocalDate Mantenimiento, com.epmtpq.inventario.model.Equipo.TipoEquipo TipoEquipo, Integer fkParada
-			) {
+			LocalDate Mantenimiento, com.epmtpq.inventario.model.Equipo.TipoEquipo TipoEquipo, String PathMinio,
+			String Descripcion, LocalDateTime Ult_Modificacion, Integer fkParada) {
 
 		this.idEquipo = idEquipo;
 		this.Serial = Serial;
@@ -69,8 +75,9 @@ public class EquipoDTO {
 		this.Mantenimiento = Mantenimiento;
 		this.TipoEquipo = TipoEquipo;
 		this.fkParada = fkParada;
-//		this.PathFoto = PathFoto;
-		// TODO Auto-generated constructor stub
+		this.PathMinio = PathMinio;
+		this.Descripcion = Descripcion;
+		this.Ult_Modificacion = Ult_Modificacion;
 	}
 
 	public int getIdEquipo() {
@@ -128,7 +135,7 @@ public class EquipoDTO {
 	public void setVersion(String version) {
 		Version = version;
 	}
-	
+
 	public EstadoEquipo getEstado() {
 		return Estado;
 	}
@@ -225,5 +232,28 @@ public class EquipoDTO {
 		Ult_Actividad = ult_Actividad;
 	}
 
-	
+	public String getPathMinio() {
+		return PathMinio;
+	}
+
+	public void setPathMinio(String pathMinio) {
+		PathMinio = pathMinio;
+	}
+
+	public String getDescripcion() {
+		return Descripcion;
+	}
+
+	public void setDescripcion(String descripcion) {
+		Descripcion = descripcion;
+	}
+
+	public LocalDateTime getUlt_Modificacion() {
+		return Ult_Modificacion;
+	}
+
+	public void setUlt_Modificacion(LocalDateTime ult_Modificacion) {
+		Ult_Modificacion = ult_Modificacion;
+	}
+
 }

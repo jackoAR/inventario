@@ -2,6 +2,7 @@ package com.epmtpq.inventario.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,12 @@ public class Equipo implements Serializable{/**
 	private int Puertos_Usados_Cobre;
 	private String Cod_Bien;
 	private String Ult_Actividad;
+	private String PathMinio;
+	private String Descripcion;
 	
+	@Column(name = "Ult_Modificacion")
+	private LocalDateTime Ult_Modificacion;
+		
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;
 	

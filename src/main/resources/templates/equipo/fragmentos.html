@@ -22,11 +22,13 @@
 			<th>Registro de Cambio</th>
 			<th>Mantenimiento</th>
 			<th>Última Actividad</th>
+			<th>Última Modificación</th>
+			<th>Descripción</th>
 			<th>Acción</th>
 		</tr>
 	</thead>
 	<tbody>
-		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-serial="${equipo.Serial}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFoto(this)">
+		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-idEquipo="${equipo.idEquipo}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFoto(this)">
 			<td th:text="${equipo.idEquipo}"></td>
 			<td th:text="${equipo.Cod_Bien}"></td>
 			<td th:text="${equipo.Host_Name}"></td>
@@ -44,7 +46,9 @@
 			<td th:text="${equipo.Estado}"></td>			
 			<td th:text="${equipo.RegistroDeCambio}"></td>
 			<td th:text="${equipo.Mantenimiento}"></td>
-			<td th:text="${equipo.Ult_Actividad}"></td>	
+			<td th:text="${equipo.Ult_Actividad}"></td>
+			<td th:text="${equipo.Ult_Modificacion}"></td>	
+			<td th:text="${equipo.Descripcion}"></td>
 
 			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"> <i
 					class="fas fa-calendar"></i>

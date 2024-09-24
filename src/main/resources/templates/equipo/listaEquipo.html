@@ -139,12 +139,12 @@
 		
 		function mostrarFoto(filaTabla){
 			const fkParada = filaTabla.getAttribute('data-fkparada');
-			const serial = filaTabla.getAttribute('data-serial');
+			const idEquipo = filaTabla.getAttribute('data-idEquipo');
 			
 			console.log("fkParada capturado: ", fkParada);
-			console.log("Serial capturado: ", serial);
+			console.log("idEquipo capturado: ", idEquipo);
 			
-			const url = `/api/photos/view/${fkParada}/${serial}`;
+			const url = `/api/photos/view/${fkParada}/${idEquipo}`;
 			
 			console.log("URL para enviar:", url);
 			

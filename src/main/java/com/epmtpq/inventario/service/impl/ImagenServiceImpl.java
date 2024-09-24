@@ -33,9 +33,9 @@ public class ImagenServiceImpl implements IImagenService {
 	private String bucketName;
 
 	@Override
-	public String uploadPhoto(String folder, String filename, MultipartFile file) throws Exception {
+	public String uploadPhoto(String corredor, String parada, String filename, MultipartFile file) throws Exception {
 		// TODO Auto-generated method stub
-		String fullPath = folder + "/" + filename;
+		String fullPath = corredor + "/" + parada + "/" + filename;
 		
 		minioClient.putObject(PutObjectArgs
 				.builder()
@@ -58,7 +58,7 @@ public class ImagenServiceImpl implements IImagenService {
 	}
 
 	@Override
-	public List<String> listPhotosInFolder(String folderName) throws Exception {
+	public List<String> listPhotosInFolder(String carpetaCorredor, String carpetaParada) throws Exception {
 		// TODO Auto-generated method stub
 		List<String> photos = new ArrayList<>();
 		
@@ -67,7 +67,7 @@ public class ImagenServiceImpl implements IImagenService {
 		Iterable<Result<Item>> results = minioClient.listObjects(
 				ListObjectsArgs.builder()
 						.bucket(bucketName)
-						.prefix(folderName + "/") // Carpeta específica
+						.prefix(carpetaCorredor + "/" + carpetaParada + "/") // Carpeta específica
 						.recursive(true) // Listar todos los objetos sin usar prefijo
 						.build());
 
@@ -120,7 +120,7 @@ public class ImagenServiceImpl implements IImagenService {
 	}
 
 	@Override
-	public InputStream downloadPhoto(String folderName, String fileName) throws Exception {
+	public InputStream downloadPhoto(String fileName) throws Exception {
 		// TODO Auto-generated method stub		
 		return minioClient.getObject(GetObjectArgs.builder()
 				.bucket(bucketName)

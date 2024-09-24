@@ -28,7 +28,8 @@
 								<form th:action="@{/guardarequipo}" th:object="${nuevo}" method="post" enctype="multipart/form-data">
 
 									<input type="hidden" th:field="*{idEquipo}">
-									<input type="hidden" name="nombreCarpeta" th:value="${nombreCarpeta}">
+									<input type="hidden" name="carpetaParada" th:value="${carpetaParada}">
+									<input type="hidden" name="carpetaCorredor" th:value="${carpetaCorredor}">									
 
 									<div class="mb-3">
 										<label class="form-label">Corredor</label>
@@ -47,6 +48,39 @@
 												th:value="${parada.id}"></option>
 										</select>
 									</div>
+									
+									<label>HostName</label>
+									<input id="hostname" type="text" th:field="*{Host_Name}" class="form-control">
+									<!--
+									<div class="mb-3">
+										<label class="form-label">Tipo Equipo</label>
+										<select class="form-select" th:field="*{TipoEquipo}">
+											<option value="0">-Seleccione-</option>
+											<option th:each="tipo: ${tipos}" th:text="${tipo}" th:value="${tipo}">
+											</option>
+										</select>
+									</div>
+									-->
+									<label>Marca</label>
+									<input type="text" th:field="*{Marca}" class="form-control">
+									<label>Modelo</label>
+									<input type="text" th:field="*{Modelo}" class="form-control">									
+									<label>Serial</label>
+									<input type="text" th:field="*{Serial}" class="form-control">									
+									<label>Versión</label>
+									<input type="text" th:field="*{Version}" class="form-control">
+																		
+									<h3>Datos de Red</h3>
+									<label>IP</label>
+									<input type="text" th:field="*{IP}" class="form-control">
+									<label>Puertos Disponibles Fibra</label>
+									<input type="number" th:field="*{Puertos_Disponibles_Fibra}" class="form-control">									
+									<label>Puertos Usados Fibra</label>
+									<input type="number" th:field="*{Puertos_Usados_Fibra}" class="form-control">
+									<label>Puertos Disponibles Cobre</label>
+									<input type="number" th:field="*{Puertos_Disponibles_Cobre}" class="form-control">
+									<label>Puertos Usados Cobre</label>
+									<input type="number" th:field="*{Puertos_Usados_Cobre}" class="form-control">
 
 									<div class="mb-3">
 										<label class="form-label">Criticidad</label>
@@ -56,13 +90,6 @@
 												th:value="${criticidad}"></option>
 										</select>
 									</div>
-
-
-									<label>Disponibles</label>
-									<input type="text" th:field="*{Disponibles}" class="form-control">
-									<label>Disponibles2</label>
-									<input type="text" th:field="*{Disponibles2}" class="form-control">
-
 									<div class="mb-3">
 										<label class="form-label">Estado</label>
 										<select class="form-select" th:field="*{Estado}">
@@ -71,43 +98,20 @@
 												th:value="${estado}"></option>
 										</select>
 									</div>
-
-									<label>HostName</label>
-									<input id="hostname" type="text" th:field="*{Host_Name}" class="form-control">
-									<label>IP</label>
-									<input type="text" th:field="*{IP}" class="form-control">
-									<label>Mantenimiento</label>
-									<input 
-									type="date" 
-									th:field="*{Mantenimiento}"
-									class="form-control Input-Date">
-									<label>Marca</label>
-									<input type="text" th:field="*{Marca}" class="form-control">
-									<label>Modelo</label>
-									<input type="text" th:field="*{Modelo}" class="form-control">
+									
+									<h3>Modificaciones</h3>																											
 									<label>Registro de Cambio</label>
 									<input 
 									type="date" 
 									th:field="*{RegistroDeCambio}" 
 									class="form-control Input-Date">
-									<label>Serial</label>
-									<input type="text" th:field="*{Serial}" class="form-control">
-
-									<div class="mb-3">
-										<label class="form-label">Tipo Equipo</label>
-										<select class="form-select" th:field="*{TipoEquipo}">
-											<option value="0">-Seleccione-</option>
-											<option th:each="tipo: ${tipos}" th:text="${tipo}" th:value="${tipo}">
-											</option>
-										</select>
-									</div>
-
-									<label>Usado</label>
-									<input type="text" th:field="*{Usado}" class="form-control">
-									<label>Usado3</label>
-									<input type="text" th:field="*{Usado3}" class="form-control">
-									<label>Versión</label>
-									<input type="text" th:field="*{Version}" class="form-control">
+									<label>Mantenimiento</label>
+									<input 
+									type="date" 
+									th:field="*{Mantenimiento}"
+									class="form-control Input-Date">
+									<label>Descripción de la Modificación</label>
+									<textarea th:field="*{descripcion}" rows="4" cols="50"></textarea>																		
 									<label>Subir Foto</label>
 									<input type="file" name="file" class="form-control"/>
 									

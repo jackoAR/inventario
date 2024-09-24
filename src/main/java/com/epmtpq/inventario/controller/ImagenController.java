@@ -50,24 +50,24 @@ public class ImagenController implements Serializable {
 //		}
 //	}
 
-	@GetMapping("/download/{fkParada}/{filename}")
-	public ResponseEntity<byte[]> downloadPhoto(@PathVariable Integer fkParada, @PathVariable String filename) {
-		try {
-			//Busca la Parada por Id de parada
-			Parada parada = srvParada.buscarPorId(fkParada);
-			//Obtiene el nombre de la Parada
-		    String folderName = parada.getNombre();
-			
-			InputStream inputStream = minioService.downloadPhoto(folderName,filename);
-			byte[] content = inputStream.readAllBytes();
-			return ResponseEntity.ok()
-					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-					.contentType(MediaType.APPLICATION_OCTET_STREAM).body(content);
-		} catch (Exception e) {
-			return ResponseEntity.status(500).body(null);
-		}
-
-	}
+//	@GetMapping("/download/{fkParada}/{filename}")
+//	public ResponseEntity<byte[]> downloadPhoto(@PathVariable Integer fkParada, @PathVariable String filename) {
+//		try {
+//			//Busca la Parada por Id de parada
+//			Parada parada = srvParada.buscarPorId(fkParada);
+//			//Obtiene el nombre de la Parada
+//		    String folderName = parada.getNombre();
+//			
+//			InputStream inputStream = minioService.downloadPhoto(folderName,filename);
+//			byte[] content = inputStream.readAllBytes();
+//			return ResponseEntity.ok()
+//					.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+//					.contentType(MediaType.APPLICATION_OCTET_STREAM).body(content);
+//		} catch (Exception e) {
+//			return ResponseEntity.status(500).body(null);
+//		}
+//
+//	}
 
 	@DeleteMapping("/delete/{filename}")
 	public ResponseEntity<String> deletePhoto(@PathVariable String filename) {
@@ -78,20 +78,20 @@ public class ImagenController implements Serializable {
 		}
 	}
 
-	@GetMapping("/list/{folderName}")
-	public ResponseEntity<List<String>> listPhotos(@PathVariable String folderName) {
-		try {
-			List<String> photos = minioService.listPhotosInFolder(folderName); // Obtiene fotos desde la carpeta
-//			model.addAttribute("photos", photos);
-//			model.addAttribute("folderName", folderName); // El nombre de la carpeta para mostrar en la vista
-//			return "/equipo/listaEquipo"; // Nombre de la vista Thymeleaf que presentará las fotos
-			return new ResponseEntity<>(photos, HttpStatus.OK);
-		} catch (Exception e) {
-//			model.addAttribute("errorMessage", "Error al cargar las fotos.");
-//			return "error"; // Página de error si algo falla
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+//	@GetMapping("/list/{folderName}")
+//	public ResponseEntity<List<String>> listPhotos(@PathVariable String folderName) {
+//		try {
+////			List<String> photos = minioService.listPhotosInFolder(folderName); // Obtiene fotos desde la carpeta
+////			model.addAttribute("photos", photos);
+////			model.addAttribute("folderName", folderName); // El nombre de la carpeta para mostrar en la vista
+////			return "/equipo/listaEquipo"; // Nombre de la vista Thymeleaf que presentará las fotos
+////			return new ResponseEntity<>(photos, HttpStatus.OK);
+//		} catch (Exception e) {
+////			model.addAttribute("errorMessage", "Error al cargar las fotos.");
+////			return "error"; // Página de error si algo falla
+//			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//	}
 
 	/*
 	 * @GetMapping("/view/{fkParada}/{serial}") public
@@ -139,28 +139,34 @@ public class ImagenController implements Serializable {
 	 * }
 	 */
 
-	@GetMapping("/view/{fkParada}/{serial}")
-	public ResponseEntity<byte[]> viewPhoto(@PathVariable Integer fkParada, @PathVariable String serial) {
+	@GetMapping("/view/{fkParada}/{idEquipo}")
+	public ResponseEntity<byte[]> viewPhoto(@PathVariable Integer fkParada, @PathVariable Integer idEquipo) {
 	    try {
 	    	// Aquí puedes imprimir los valores recibidos para comprobar
 		    System.out.println("fkParada: " + fkParada);
-		    System.out.println("Serial: " + serial);
+		    System.out.println("idEquipo: " + idEquipo);
 		    
 		    //busca la parada por el id de la parada
 		    Parada parada = srvParada.buscarPorId(fkParada);
 		    //obtiene el nombre de la parada
-		    String folderName = parada.getNombre();
+		    String carpetaParada = parada.getNombre();
+		    
+		    int idCorredor = parada.getFkCorredor().getId();
+		    Corredor corredor = srvCorredor.buscarPorId(idCorredor);
+		    String carpetaCorredor = corredor.getNombre();
 		    
 		    // Listar las fotos en la carpeta de la parada
-	        List<String> photos = minioService.listPhotosInFolder(folderName);
+	        List<String> photos = minioService.listPhotosInFolder(carpetaCorredor, carpetaParada);
 		    
-	        // Buscar el archivo que coincida con el número de serie
-	        String photoFilename = photos.stream()
-	                .filter(name -> name.contains(serial))
-	                .findFirst()
-	                .orElseThrow(() -> new Exception("Foto no encontrada para el serial: " + serial));
+	        String equipoID = Integer.toString(idEquipo);
 	        
-	        InputStream inputStream = minioService.downloadPhoto(folderName, photoFilename);
+	        // Buscar el archivo que coincida con el ID de Equipo Seleccionado en la tabla
+	        String photoFilename = photos.stream()
+	                .filter(name -> name.contains(equipoID))
+	                .findFirst()
+	                .orElseThrow(() -> new Exception("Foto no encontrada para el ID: " + idEquipo));
+	        
+	        InputStream inputStream = minioService.downloadPhoto(photoFilename);
 	        byte[] photoBytes = inputStream.readAllBytes();
 	        
 	     // Determine the content type based on the file extension

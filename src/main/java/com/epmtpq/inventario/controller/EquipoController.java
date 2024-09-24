@@ -1,6 +1,7 @@
 package com.epmtpq.inventario.controller;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,10 @@ public class EquipoController implements Serializable {
 						equipo.getCriticidad(), 
 						equipo.getRegistroDeCambio(),
 						equipo.getMantenimiento(), 
-						equipo.getTipoEquipo(), 
+						equipo.getTipoEquipo(),
+						equipo.getPathMinio(),
+						equipo.getDescripcion(),
+						equipo.getUlt_Modificacion(), 
 						equipo.getFkParada().getId()))
 				.collect(Collectors.toList());
 
@@ -126,11 +130,14 @@ public class EquipoController implements Serializable {
 	public String editarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable Integer fkParada,
 			Model model) {
 		Equipo existe = null;
-		String nombreCarpeta = "";
+		String carpetaParada = "";
+		String carpetaCorredor = "";
 		if (idEquipo > 0 && fkParada > 0) {
 			existe = srv.buscarPorId(idEquipo);
 			Parada parada = srvParada.buscarPorId(fkParada);
-			nombreCarpeta = parada.getNombre();
+			carpetaCorredor = parada.getFkCorredor().getNombre();
+			carpetaParada = parada.getNombre();
+			
 		} else {
 			return "redirect:/listaequipo";
 		}
@@ -146,26 +153,35 @@ public class EquipoController implements Serializable {
 		model.addAttribute("criticidades", Equipo.EquipoCriticidad.values());
 		model.addAttribute("estados", Equipo.EstadoEquipo.values());
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
-		model.addAttribute("nombreCarpeta", nombreCarpeta);
+		model.addAttribute("carpetaCorredor", carpetaCorredor);
+		model.addAttribute("carpetaParada", carpetaParada);
 		return "/equipo/nuevoEquipo";
 
 	}
 
 	@PostMapping("/guardarequipo")
 	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo,
-			@RequestParam("nombreCarpeta") String nombreCarpeta, @RequestParam("file") MultipartFile file) {
+			@RequestParam("carpetaCorredor") String carpetaCorredor,
+			@RequestParam("carpetaParada") String carpetaParada,
+			@RequestParam("file") MultipartFile file) {
 
 		try {
 				if (!file.isEmpty()) {
 					
-					String nombreOriginal = file.getOriginalFilename();
+//					String nombreOriginal = file.getOriginalFilename();
+					int idEquipo = nuevo.getIdEquipo();
+					String nombreFoto = Integer.toString(idEquipo);
 					
-					srvImage.uploadPhoto(nombreCarpeta, nombreOriginal, file);
+					System.out.println(nombreFoto);
+										
+					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, nombreFoto, file);
 					
-					System.out.println("Archivo subido con éxito: " + nombreOriginal);
+					System.out.println("Archivo subido con éxito: " + nombreFoto);
+															
+					nuevo.setUlt_Modificacion(LocalDateTime.now());					
 					
 					srv.insertarEquipo(nuevo);
-					System.out.println("Carpeta: " + nombreCarpeta);					
+					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada);					
 					
 				}else {
 					

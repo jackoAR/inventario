@@ -31,19 +31,9 @@ class InventarioApplicationTests {
 		 * System.out.println("Parada no encontrada"); }
 		 */
 		
-		List<String> nombreFotos = srvimagen.listPhotosInFolder("1");
 		
 		
-		if (!nombreFotos.isEmpty()) {
-			
-			for (String nombreArchivo : nombreFotos) {
-				System.out.println("Fotos encontradas en la carpeta '1': " + nombreArchivo);
-			}
-				
-		}else {
-			System.out.println("No se encontraron fotos en la carpeta '1'");
-		}
 		
-	}
+		
 
-}
+}}
