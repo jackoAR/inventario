@@ -68,117 +68,162 @@
 			</div>
 
 			<script th:inline="javascript">
-		function enviarCorredorId(corredorId) {
-			if (corredorId !== "0") {
-				// Llamada fetch para enviar el id al controlador
-				fetch(`/api/photos/cargarSelectParada/${corredorId}`, {
-					method: 'GET', // Usa GET si solo estás enviando el id como parte de la URL
-					headers: {
-						'Accept': 'application/json',
-						'Content-Type': 'application/json'
-					}
-				})
-					.then(response => {
-						if (!response.ok) {
-							throw new Error('Error al cargar las paradas');
+					function enviarCorredorId(corredorId) {
+						if (corredorId !== "0") {
+							// Llamada fetch para enviar el id al controlador
+							fetch(`/api/photos/cargarSelectParada/${corredorId}`, {
+								method: 'GET', // Usa GET si solo estás enviando el id como parte de la URL
+								headers: {
+									'Accept': 'application/json',
+									'Content-Type': 'application/json'
+								}
+							})
+								.then(response => {
+									if (!response.ok) {
+										throw new Error('Error al cargar las paradas');
+									}
+									return response.json();
+								})
+								.then(paradas => {
+									// Aquí puedes procesar los datos que te devuelve el servidor (por ejemplo, las paradas)
+									const paradaSelect = document.getElementById("paradaId");
+									
+									// Limpiamos las opciones previas
+					                paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
+					                
+					                paradas.forEach(parada => {
+					                    const option = document.createElement("option");
+					                    option.value = parada.id;
+					                    option.text = parada.nombre;
+					                    paradaSelect.appendChild(option);
+					                });
+					                
+								})
+								.catch(error => console.error('Error:', error));
+						}else{
+							const paradaSelect = document.getElementById("paradaId");
+				            paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
 						}
-						return response.json();
-					})
-					.then(paradas => {
-						// Aquí puedes procesar los datos que te devuelve el servidor (por ejemplo, las paradas)
-						const paradaSelect = document.getElementById("paradaId");
+					}
+		
+					function enviarIdParada(paradaId) {
+					    if (paradaId !== "0") {
+					        // Hacemos la solicitud al controlador
+					        fetch(`/filtroequipo/${paradaId}`, {
+					            method: 'GET',
+					            headers: {
+					            	'Accept': 'text/html', // se espera recibir un fragmento HTML
+					            }
+					        })
+					        .then(response => {
+					            if (!response.ok) {
+					                throw new Error('Error al cargar los equipos');
+					            }
+					            return response.text(); // Procesamos la respuesta como text
+					            
+					        })
+					        .then(html => {
+					        	
+					        	document.getElementById('equipoTableContainer').style.display = 'block';
+					            // Reemplazamos la tabla actual con la nueva tabla
+					            document.getElementById('equipoTableContainer').innerHTML = html;
+					        })
+					        .catch(error => {
+					            console.error('Error:', error);
+					        });
+					    } else {
+					        // Si paradaId es "0", ocultamos la tabla
+					        document.getElementById('equipoTableContainer').style.display = 'none';
+					    }
+					}
+		
+					function mostrarFoto(filaTabla){
+						const fkParada = filaTabla.getAttribute('data-fkparada');
+						const idEquipo = filaTabla.getAttribute('data-idEquipo');
 						
-						// Limpiamos las opciones previas
-		                paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
-		                
-		                paradas.forEach(parada => {
-		                    const option = document.createElement("option");
-		                    option.value = parada.id;
-		                    option.text = parada.nombre;
-		                    paradaSelect.appendChild(option);
-		                });
-		                
-					})
-					.catch(error => console.error('Error:', error));
-			}else{
-				const paradaSelect = document.getElementById("paradaId");
-	            paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
-			}
-		}
-		
-		function enviarIdParada(paradaId) {
-		    if (paradaId !== "0") {
-		        // Hacemos la solicitud al controlador
-		        fetch(`/filtroequipo/${paradaId}`, {
-		            method: 'GET',
-		            headers: {
-		            	'Accept': 'text/html', // se espera recibir un fragmento HTML
-		            }
-		        })
-		        .then(response => {
-		            if (!response.ok) {
-		                throw new Error('Error al cargar los equipos');
-		            }
-		            return response.text(); // Procesamos la respuesta como text
-		            
-		        })
-		        .then(html => {
-		        	
-		        	document.getElementById('equipoTableContainer').style.display = 'block';
-		            // Reemplazamos la tabla actual con la nueva tabla
-		            document.getElementById('equipoTableContainer').innerHTML = html;
-		        })
-		        .catch(error => {
-		            console.error('Error:', error);
-		        });
-		    } else {
-		        // Si paradaId es "0", ocultamos la tabla
-		        document.getElementById('equipoTableContainer').style.display = 'none';
-		    }
-		}
-		
-		function mostrarFoto(filaTabla){
-			const fkParada = filaTabla.getAttribute('data-fkparada');
-			const idEquipo = filaTabla.getAttribute('data-idEquipo');
-			
-			console.log("fkParada capturado: ", fkParada);
-			console.log("idEquipo capturado: ", idEquipo);
-			
-			const url = `/api/photos/view/${fkParada}/${idEquipo}`;
-			
-			console.log("URL para enviar:", url);
-			
-			fetch(url,  {
-		        method: 'GET',
-		        headers: {
-		            'Accept': 'image/jpeg,image/png,image/gif' // Esperamos recibir una imagen
-		        }
-			})
-	        .then(response => {
-	        	if (!response.ok) {
-	                throw new Error('Error al obtener la parada');
-	            }
-	        	return response.blob();
-	        })
-	        .then(imageBlob => {
-		     // Crear una URL para la imagen descargada
-		     const imageObjectURL = URL.createObjectURL(imageBlob);
-     
-		     // Mostrar la imagen en un div con id 'foto-container'
-		     const imgElement = document.createElement('img');
-		     imgElement.src = imageObjectURL;
-		     imgElement.alt = "Imagen del equipo";
-		     imgElement.style.maxWidth = "100%";  // Ajustar tamaño si es necesario
-     
-		     const divContainer = document.getElementById('foto-container');
-		     divContainer.innerHTML = ''; // Limpiar el div antes de insertar la imagen
-		     divContainer.appendChild(imgElement);
- 			
-	        })
-	        .catch(error =>{
-	        	console.error('Error:', error);
-	        });
-		}
+						console.log("fkParada capturado: ", fkParada);
+						console.log("idEquipo capturado: ", idEquipo);
+						
+						const url = `/api/photos/view/${fkParada}/${idEquipo}`;
+						
+						console.log("URL para enviar:", url);
+						
+						fetch(url,  {
+					        method: 'GET',
+					        headers: {
+					            'Accept': 'image/jpeg,image/png,image/gif' // Esperamos recibir una imagen
+					        }
+						})
+				        .then(response => {
+				        	if (!response.ok) {
+				                throw new Error('Error al obtener la parada');
+				            }
+				        	return response.blob();
+				        })
+				        .then(imageBlob => {
+					     // Crear una URL para la imagen descargada
+					     const imageObjectURL = URL.createObjectURL(imageBlob);
+			     
+					     // Mostrar la imagen en un div con id 'foto-container'
+					     const imgElement = document.createElement('img');
+					     imgElement.src = imageObjectURL;
+					     imgElement.alt = "Imagen del equipo";
+					     imgElement.style.maxWidth = "100%";  // Ajustar tamaño si es necesario
+			     
+					     const divContainer = document.getElementById('foto-container');
+					     divContainer.innerHTML = ''; // Limpiar el div antes de insertar la imagen
+					     divContainer.appendChild(imgElement);
+			 			
+				        })
+				        .catch(error =>{
+				        	console.error('Error:', error);
+				        });
+					}
+					
+					function mostrarFotoUrls(filaTabla){
+						const fkParada = filaTabla.getAttribute('data-fkparada');
+						const idEquipo = filaTabla.getAttribute('data-idEquipo');
+						
+						console.log("fkParada capturado: ", fkParada);
+						console.log("idEquipo capturado: ", idEquipo);
+						
+						const url = `/api/photos/viewList/${fkParada}/${idEquipo}`;
+						
+						console.log("URL para enviar:", url);
+						
+						fetch(url,  {
+					        method: 'GET',
+					        headers: {
+					            'Accept': 'application/json' // Esperamos recibir una imagen
+					        }
+						})
+				        .then(response => {
+				        	if (!response.ok) {
+				                throw new Error('Error al obtener la lista de fotos');
+				            }
+				        	return response.json();
+				        })
+				        .then(photoUrls => {
+					     // Crear una URL para la imagen descargada
+					     const divContainer = document.getElementById('foto-container');
+					     divContainer.innerHTML = ''; // Limpiar el div antes de insertar la imagen
+					     
+					     photoUrls.forEach(photoUrl => {			     
+					     // Mostrar la imagen en un div con id 'foto-container'
+					     const imgElement = document.createElement('img');
+					     imgElement.src = photoUrl;
+					     imgElement.alt = "Imagen del equipo";
+					     imgElement.style.maxWidth = "100%";  // Ajustar tamaño si es necesario			     
+					     
+					     console.log("URLs de las imágenes:", photoUrls);
+					 	 // Insertar la imagen en el contenedor
+					     divContainer.appendChild(imgElement);
+					     });
+				        })
+				        .catch(error =>{
+				        	console.error('Error:', error);
+				        });
+					}
 		
 		
 				

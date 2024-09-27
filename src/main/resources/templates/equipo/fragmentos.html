@@ -28,7 +28,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-idEquipo="${equipo.idEquipo}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFoto(this)">
+		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-idEquipo="${equipo.idEquipo}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFotoUrls(this)">
 			<td th:text="${equipo.idEquipo}"></td>
 			<td th:text="${equipo.Cod_Bien}"></td>
 			<td th:text="${equipo.Host_Name}"></td>

@@ -2,6 +2,7 @@ package com.epmtpq.inventario.controller;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -154,15 +155,14 @@ public class ImagenController implements Serializable {
 		    int idCorredor = parada.getFkCorredor().getId();
 		    Corredor corredor = srvCorredor.buscarPorId(idCorredor);
 		    String carpetaCorredor = corredor.getNombre();
+		    String carpetaEquipo = Integer.toString(idEquipo);
 		    
 		    // Listar las fotos en la carpeta de la parada
-	        List<String> photos = minioService.listPhotosInFolder(carpetaCorredor, carpetaParada);
-		    
-	        String equipoID = Integer.toString(idEquipo);
-	        
+	        List<String> photos = minioService.listPhotosInFolder(carpetaCorredor, carpetaParada, carpetaEquipo);
+		    	        
 	        // Buscar el archivo que coincida con el ID de Equipo Seleccionado en la tabla
 	        String photoFilename = photos.stream()
-	                .filter(name -> name.contains(equipoID))
+	                .filter(name -> name.contains(carpetaEquipo))
 	                .findFirst()
 	                .orElseThrow(() -> new Exception("Foto no encontrada para el ID: " + idEquipo));
 	        
@@ -181,6 +181,56 @@ public class ImagenController implements Serializable {
 	        headers.setContentType(MediaType.parseMediaType(contentType));
 	        
 	        return new ResponseEntity<>(photoBytes, headers, HttpStatus.OK);
+		    
+		} catch (Exception e) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+	}
+	
+	@GetMapping("/viewList/{fkParada}/{idEquipo}")
+	public ResponseEntity<List<String>> viewPhotoList(@PathVariable Integer fkParada, @PathVariable Integer idEquipo) {
+	    try {
+	    	// Aquí puedes imprimir los valores recibidos para comprobar
+		    System.out.println("fkParada: " + fkParada);
+		    System.out.println("idEquipo: " + idEquipo);
+		    
+		    //busca la parada por el id de la parada
+		    Parada parada = srvParada.buscarPorId(fkParada);
+		    //obtiene el nombre de la parada
+		    String carpetaParada = parada.getNombre();
+		    
+		    int idCorredor = parada.getFkCorredor().getId();
+		    Corredor corredor = srvCorredor.buscarPorId(idCorredor);
+		    String carpetaCorredor = corredor.getNombre();
+		    String carpetaEquipo = Integer.toString(idEquipo);
+		    
+		    // Listar las fotos en la carpeta de la parada
+//	        List<String> photos = minioService.listPhotosInFolder(carpetaCorredor, carpetaParada, carpetaEquipo);
+		    	        
+	        // Buscar el archivo que coincida con el ID de Equipo Seleccionado en la tabla
+//	        String photoFilename = photos.stream()
+//	                .filter(name -> name.contains(carpetaEquipo))
+//	                .findFirst()
+//	                .orElseThrow(() -> new Exception("Foto no encontrada para el ID: " + idEquipo));
+	        String pathFolder = carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo;
+	        System.out.println("ImageController: " + pathFolder);
+	        List<String> photoUrls = minioService.listaURLsFotos(pathFolder);
+//	        List<InputStream> inputStreams = minioService.listaFotosOrdenadoPorFecha(pathFolder);
+//	        List<byte[]> photoBytesList = new ArrayList<>();
+//	        
+//	        for (InputStream inputStream : inputStreams) {
+//	        	
+//	        	byte[] photoBytes = inputStream.readAllBytes();
+//	        	
+//		        photoBytesList.add(photoBytes);
+//				
+//			}	          
+//		    
+//	        HttpHeaders headers = new HttpHeaders();
+//	        headers.setContentType(MediaType.parseMediaType("image/jpeg"));
+	        List<String> ultimasDosFotos = Arrays.asList(photoUrls.get(0),photoUrls.get(1));
+	        return new ResponseEntity<>(ultimasDosFotos, HttpStatus.OK);
 		    
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -15,6 +15,8 @@ public interface IImagenService {
 	public String uploadPhoto(String corredor, String parada, String filename, MultipartFile file) throws Exception;
 	public InputStream downloadPhoto(String fileName) throws Exception;
 	public String deletePhoto(String filename) throws Exception;
-	public List<String> listPhotosInFolder(String carpetaCorredor, String carpetaParada) throws Exception;
+	public List<String> listPhotosInFolder(String carpetaCorredor, String carpetaParada, String carpetaEquipo) throws Exception;
 	public FileResponse getFile(String filename) throws Exception;
+	public List<InputStream> listaFotosOrdenadoPorFecha(String pathFolder) throws Exception;
+	public List<String> listaURLsFotos(String pathFolder) throws Exception;
 }

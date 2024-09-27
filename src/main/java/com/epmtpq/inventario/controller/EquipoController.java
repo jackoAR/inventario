@@ -178,9 +178,7 @@ public class EquipoController implements Serializable {
 					
 					System.out.println("Archivo subido con éxito: " + nombreFoto);
 															
-					nuevo.setUlt_Modificacion(LocalDateTime.now());					
 					
-					srv.insertarEquipo(nuevo);
 					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada);					
 					
 				}else {
@@ -191,7 +189,10 @@ public class EquipoController implements Serializable {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-
+		
+		nuevo.setUlt_Modificacion(LocalDateTime.now());			
+		srv.insertarEquipo(nuevo);
+		
 		return "redirect:/listaequipo";
 	}
 
