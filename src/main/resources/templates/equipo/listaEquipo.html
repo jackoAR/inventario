@@ -3,6 +3,30 @@
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{plantilla/blank}">
 <head>
+<style>
+.horizontal-gallery {
+	display: flex;
+	justify-content: center; /* Centra las imágenes horizontalmente */
+	gap: 20px; /* Espacio entre las imágenes */
+}
+
+.photo-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.photo-wrapper img {
+	max-width: 200px; /* Ajusta el tamaño de la imagen a tu preferencia */
+	margin-bottom: 10px; /* Espacio entre la imagen y el texto */
+}
+
+.photo-label {
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+}
+</style>
 <meta charset="UTF-8">
 <title>Equipo</title>
 </head>
@@ -60,7 +84,7 @@
 
 					<!-- La imagen será mostrada aquí dinámicamente -->
 					<h1>Image Viewer</h1>
-					<div id="foto-container">
+					<div id="foto-container" class="horizontal-gallery">
 						<!-- Aquí se mostrará la imagen -->
 					</div>
 
@@ -180,7 +204,7 @@
 				        });
 					}
 					
-					function mostrarFotoUrls(filaTabla){
+					function mostrarFotoUrls1(filaTabla){
 						const fkParada = filaTabla.getAttribute('data-fkparada');
 						const idEquipo = filaTabla.getAttribute('data-idEquipo');
 						
@@ -224,8 +248,183 @@
 				        	console.error('Error:', error);
 				        });
 					}
-		
-		
+					
+					function mostrarFotoUrls2(filaTabla){
+						const fkParada = filaTabla.getAttribute('data-fkparada');
+						const idEquipo = filaTabla.getAttribute('data-idEquipo');
+						
+						console.log("fkParada capturado: ", fkParada);
+						console.log("idEquipo capturado: ", idEquipo);
+						
+						const url = `/api/photos/viewList/${fkParada}/${idEquipo}`;
+						
+						console.log("URL para enviar:", url);
+						
+						fetch(url,  {
+					        method: 'GET',
+					        headers: {
+					            'Accept': 'application/json' // Esperamos recibir una imagen
+					        }
+						})
+				        .then(response => {
+				        	if (!response.ok) {
+				                throw new Error('Error al obtener la lista de fotos');
+				            }
+				        	return response.json();
+				        })
+				        .then(photoUrls => {
+				            const divContainer = document.getElementById('foto-container');
+				            divContainer.innerHTML = ''; // Limpiar el div antes de insertar las imágenes
+				            
+				            // Crear la estructura de las dos imágenes con etiquetas
+				            if (photoUrls.length >= 2) {
+				                // Primera imagen (Antes)
+				                const divAntes = document.createElement('div');
+				                divAntes.style.display = 'inline-block'; // Mostrar en línea (horizontal)
+				                const imgAntes = document.createElement('img');
+				                imgAntes.src = photoUrls[0]; // Primer URL
+				                imgAntes.alt = "Imagen anterior del equipo";
+				                imgAntes.style.maxWidth = "50%";
+				                imgAntes.style.display = 'block'; // Para que el label esté debajo
+				                const labelAntes = document.createElement('label');
+				                labelAntes.innerText = "Antes";
+				                labelAntes.style.display = 'block'; // Mostrar debajo de la imagen
+
+				                divAntes.appendChild(imgAntes);
+				                divAntes.appendChild(labelAntes);
+				                
+				                // Segunda imagen (Después)
+				                const divDespues = document.createElement('div');
+				                divDespues.style.display = 'inline-block'; // Mostrar en línea (horizontal)
+				                const imgDespues = document.createElement('img');
+				                imgDespues.src = photoUrls[1]; // Segundo URL
+				                imgDespues.alt = "Imagen reciente del equipo";
+				                imgDespues.style.maxWidth = "50%";
+				                imgDespues.style.display = 'block'; // Para que el label esté debajo
+				                const labelDespues = document.createElement('label');
+				                labelDespues.innerText = "Después";
+				                labelDespues.style.display = 'block'; // Mostrar debajo de la imagen
+
+				                divDespues.appendChild(imgDespues);
+				                divDespues.appendChild(labelDespues);
+				                
+				                // Añadir ambas imágenes con sus etiquetas al contenedor
+				                divContainer.appendChild(divAntes);
+				                divContainer.appendChild(divDespues);
+				            } else {
+				                // Manejar el caso cuando no haya suficientes imágenes
+				                const noImagesMessage = document.createElement('p');
+				                noImagesMessage.innerText = 'No hay suficientes imágenes disponibles.';
+				                divContainer.appendChild(noImagesMessage);
+				            }
+
+				            console.log("URLs de las imágenes:", photoUrls);
+				        })
+				        .catch(error => {
+				            console.error('Error:', error);
+				        });
+					}
+					
+					function mostrarFotoUrls(filaTabla){
+						const fkParada = filaTabla.getAttribute('data-fkparada');
+						const idEquipo = filaTabla.getAttribute('data-idEquipo');
+						
+						console.log("fkParada capturado: ", fkParada);
+						console.log("idEquipo capturado: ", idEquipo);
+						
+						const url = `/api/photos/viewList/${fkParada}/${idEquipo}`;
+						
+						console.log("URL para enviar:", url);
+						
+						
+						fetch(url,  {
+					        method: 'GET',
+					        headers: {
+					            'Accept': 'application/json' // Esperamos recibir una imagen
+					        }
+						})
+				        .then(response => {
+				        	if (!response.ok) {
+				                throw new Error('Error al obtener la lista de fotos');
+				            }
+				        	return response.json();
+				        })
+				        .then(photoUrls => {
+				        	const divContainer = document.getElementById('foto-container');
+				            divContainer.innerHTML = ''; // Limpiar el div antes de insertar las imágenes
+				            
+				         // Comprobar si no hay imágenes para mostrar
+				            if (photoUrls.length === 0) {
+				                const noImagesMessage = document.createElement('p');
+				                noImagesMessage.innerText = "No hay imágenes para mostrar.";
+				                noImagesMessage.style.color = "red"; // Cambiar color del texto a rojo
+				                noImagesMessage.style.textAlign = "center";
+				                noImagesMessage.style.fontSize = "18px";
+				                divContainer.appendChild(noImagesMessage); 
+				                return; // Salir de la función
+				            }
+				            
+				            // Crear la estructura de las dos imágenes con etiquetas
+				            if (photoUrls.length >= 2) {
+				                // Primera imagen (Antes)
+				                const divAntes = document.createElement('div');
+				                divAntes.style.display = 'inline-block'; // Mostrar en línea (horizontal)
+				                const imgAntes = document.createElement('img');
+				                imgAntes.src = photoUrls[0]; // Primer URL
+				                imgAntes.alt = "Imagen anterior del equipo";
+				                imgAntes.style.maxWidth = "100%";
+				                imgAntes.style.display = 'block'; // Para que el label esté debajo
+				                const labelAntes = document.createElement('label');
+				                labelAntes.innerText = "Antes";
+				                labelAntes.style.display = 'block'; // Mostrar debajo de la imagen
+
+				                divAntes.appendChild(imgAntes);
+				                divAntes.appendChild(labelAntes);
+				                
+				                // Segunda imagen (Después)
+				                const divDespues = document.createElement('div');
+				                divDespues.style.display = 'inline-block'; // Mostrar en línea (horizontal)
+				                const imgDespues = document.createElement('img');
+				                imgDespues.src = photoUrls[1]; // Segundo URL
+				                imgDespues.alt = "Imagen reciente del equipo";
+				                imgDespues.style.maxWidth = "100%";
+				                imgDespues.style.display = 'block'; // Para que el label esté debajo
+				                const labelDespues = document.createElement('label');
+				                labelDespues.innerText = "Después";
+				                labelDespues.style.display = 'block'; // Mostrar debajo de la imagen
+
+				                divDespues.appendChild(imgDespues);
+				                divDespues.appendChild(labelDespues);
+				                
+				                // Añadir ambas imágenes con sus etiquetas al contenedor
+				                divContainer.appendChild(divAntes);
+				                divContainer.appendChild(divDespues);
+				                
+				            }else if(photoUrls.length === 1){
+				            	const divActual = document.createElement('div');
+				            	divActual.style.display = 'inline-block'; 
+				                const imgActual = document.createElement('img');
+				                imgActual.src = photoUrls[0];
+				                imgActual.alt = "Imagen única del equipo";
+				                imgActual.style.maxWidth = "50%";
+				                imgActual.style.display = 'block';
+				                const labelActual = document.createElement('label');
+				                labelActual.innerText = "Actual";
+				                labelActual.style.display = 'block'; 
+
+				                divActual.appendChild(imgActual);
+				                divActual.appendChild(labelActual);
+				                
+				             	// Añadir la imagen con su etiqueta al contenedor
+				                divContainer.appendChild(divActual);			                
+				            }
+				            
+				            console.log("URLs de las imágenes:", photoUrls);
+				        })
+				        .catch(error => {
+				            console.error('Error:', error);				            
+				        });
+					}	
 				
 	</script>
 

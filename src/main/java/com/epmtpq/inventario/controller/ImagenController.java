@@ -229,8 +229,8 @@ public class ImagenController implements Serializable {
 //		    
 //	        HttpHeaders headers = new HttpHeaders();
 //	        headers.setContentType(MediaType.parseMediaType("image/jpeg"));
-	        List<String> ultimasDosFotos = Arrays.asList(photoUrls.get(0),photoUrls.get(1));
-	        return new ResponseEntity<>(ultimasDosFotos, HttpStatus.OK);
+//	        List<String> ultimasDosFotos = Arrays.asList(photoUrls.get(0),photoUrls.get(1));
+	        return new ResponseEntity<>(photoUrls, HttpStatus.OK);
 		    
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
