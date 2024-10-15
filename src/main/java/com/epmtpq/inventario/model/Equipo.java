@@ -2,7 +2,6 @@ package com.epmtpq.inventario.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +41,7 @@ public class Equipo implements Serializable{/**
 	private String Descripcion;
 	
 	@Column(name = "Ult_Modificacion")
-	private LocalDateTime Ult_Modificacion;
+	private LocalDate Ult_Modificacion;
 		
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;
@@ -82,6 +81,7 @@ public class Equipo implements Serializable{/**
 	
 	@ManyToOne
 	private Parada fkParada;
+	
 	@OneToMany(mappedBy = "fkEquipo")
 	private List<Imagen> ListaImagen = new ArrayList<>();
 }

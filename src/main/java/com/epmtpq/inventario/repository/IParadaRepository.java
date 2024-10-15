@@ -16,4 +16,6 @@ public interface IParadaRepository extends JpaRepository<Parada, Integer>{
 	public Parada buscarPorId(Integer id);
 	@Query("select p from Parada p where p.fkCorredor.id = ?1")
 	public List<Parada> buscarParadaPorIdCorredor(Integer id);
+	@Query("select p from Parada p where p.nombre=?1")
+	public Parada getIdParadaPorNombre(String nombreParada);
 }

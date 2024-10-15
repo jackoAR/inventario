@@ -28,7 +28,13 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr th:each="equipo: ${ListaEquipo}" class="odd gradeX" th:data-idEquipo="${equipo.idEquipo}" th:data-fkparada="${equipo.fkParada}" onclick="mostrarFotoUrls(this)">
+		<tr th:each="equipo: ${ListaEquipo}" 
+		class="odd gradeX" 
+		th:data-idEquipo="${equipo.idEquipo}" 
+		th:data-fkparada="${equipo.fkParada}"
+		th:data-Ult_Modificacion="${equipo.Ult_Modificacion}"
+		th:data-Mantenimiento="${equipo.Mantenimiento}"		
+		onclick="mostrarFotoUrls(this)">
 			<td th:text="${equipo.idEquipo}"></td>
 			<td th:text="${equipo.Cod_Bien}"></td>
 			<td th:text="${equipo.Host_Name}"></td>
@@ -50,9 +56,9 @@
 			<td th:text="${equipo.Ult_Modificacion}"></td>	
 			<td th:text="${equipo.Descripcion}"></td>
 
-			<td><a th:href="@{/nuevoequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"> <i
+			<td><a th:href="@{/editarequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"> <i
 					class="fas fa-calendar"></i>
-			</a> <a th:href="@{/eliminarequipo/}+${equipo.idEquipo}"
+			</a> <a th:href="@{/eliminarequipo/}+${equipo.idEquipo}+'/'+${equipo.fkParada}"
 				onclick="return confirm('Seguro desea eliminar el registro?');">
 					<i class="fa fa-trash"></i>
 			</a></td>

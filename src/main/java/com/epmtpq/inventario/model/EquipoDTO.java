@@ -1,8 +1,6 @@
 package com.epmtpq.inventario.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 import com.epmtpq.inventario.model.Equipo.EquipoCriticidad;
 import com.epmtpq.inventario.model.Equipo.EstadoEquipo;
 import com.epmtpq.inventario.model.Equipo.TipoEquipo;
@@ -29,7 +27,7 @@ public class EquipoDTO {
 	private String Descripcion;
 
 	@Column(name = "Ult_Modificacion")
-	private LocalDateTime Ult_Modificacion;
+	private LocalDate Ult_Modificacion;
 
 	@Enumerated(EnumType.STRING)
 	private EstadoEquipo Estado;
@@ -54,7 +52,7 @@ public class EquipoDTO {
 			com.epmtpq.inventario.model.Equipo.EstadoEquipo Estado,
 			com.epmtpq.inventario.model.Equipo.EquipoCriticidad Criticidad, LocalDate RegistroDeCambio,
 			LocalDate Mantenimiento, com.epmtpq.inventario.model.Equipo.TipoEquipo TipoEquipo, String PathMinio,
-			String Descripcion, LocalDateTime Ult_Modificacion, Integer fkParada) {
+			String Descripcion, LocalDate Ult_Modificacion, Integer fkParada) {
 
 		this.idEquipo = idEquipo;
 		this.Serial = Serial;
@@ -248,12 +246,9 @@ public class EquipoDTO {
 		Descripcion = descripcion;
 	}
 
-	public LocalDateTime getUlt_Modificacion() {
+	public LocalDate getUlt_Modificacion() {
 		return Ult_Modificacion;
 	}
 
-	public void setUlt_Modificacion(LocalDateTime ult_Modificacion) {
-		Ult_Modificacion = ult_Modificacion;
-	}
-
+	
 }

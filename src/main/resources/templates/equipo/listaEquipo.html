@@ -44,11 +44,15 @@
 							<h1 class="page-header">Equipo</h1>
 						</div>
 					</div>
+					
+					<form th:action="@{/nuevoequipo}" method="get">
 					<div class="row">
 						<div class="col-lg-12">
 							<div class="mb-3">
-								<label class="form-label">Corredor</label> <select
-									id="corredorId" onchange="enviarCorredorId(this.value)"
+								<label class="form-label">Corredor</label> 
+								<select
+									id="corredorId" 
+									onchange="enviarCorredorId(this.value)"
 									class="form-select">
 									<option value="0">-Seleccione-</option>
 									<option th:each="corredor: ${listaCorredor}"
@@ -58,23 +62,33 @@
 						</div>
 						<div class="col-lg-12">
 							<div class="mb-3">
-								<label class="form-label">Parada</label> <select id="paradaId"
-									class="form-select" onchange="enviarIdParada(this.value)">
+								<label class="form-label">Parada</label>
+								<select 
+									id="paradaId"
+									class="form-select" 
+									onchange="enviarIdParada(this.value)">
 									<option value="0">-Seleccione-</option>
 									<option></option>
 								</select>
 							</div>
 						</div>
 					</div>
-
+					
+					<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
+					<div id="hiddenInputContainer"></div>
+					<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
+					<div id="hiddenInputContainer1"></div>
+					
 					<div id="agregar" class="row">
 						<div class="col-lg-12">
-							<a th:href="@{/nuevoequipo}"><button type="button"
+							<button type="submit"
 									class="btn btn-success">
 									<i class="fa fa-plus"></i>
-								</button></a>
+							</button>
 						</div>
 					</div>
+					
+					</form>
 					<!-- /.row -->
 					<div id="equipoTableContainer" class="table-responsive">
 
@@ -90,9 +104,13 @@
 
 				</div>
 			</div>
-
+			<script th:src="@{/scripts/selectCorredor.js}" defer></script>
+			<script th:src="@{/scripts/selectParada.js}" defer></script>
+			
 			<script th:inline="javascript">
+			
 					function enviarCorredorId(corredorId) {
+						
 						if (corredorId !== "0") {
 							// Llamada fetch para enviar el id al controlador
 							fetch(`/api/photos/cargarSelectParada/${corredorId}`, {
@@ -328,6 +346,8 @@
 					function mostrarFotoUrls(filaTabla){
 						const fkParada = filaTabla.getAttribute('data-fkparada');
 						const idEquipo = filaTabla.getAttribute('data-idEquipo');
+						const Ult_Modificacion = filaTabla.getAttribute('data-Ult_Modificacion');
+						const Mantenimiento = filaTabla.getAttribute('data-Mantenimiento');
 						
 						console.log("fkParada capturado: ", fkParada);
 						console.log("idEquipo capturado: ", idEquipo);
@@ -377,9 +397,16 @@
 				                const labelAntes = document.createElement('label');
 				                labelAntes.innerText = "Antes";
 				                labelAntes.style.display = 'block'; // Mostrar debajo de la imagen
+				                
+				             // Crear un nuevo label para la fecha de modificación
+				                const labelFechaMantenimiento = document.createElement('label');
+				                labelFechaMantenimiento.innerText = `Fecha de Último Mantenimiento: ${Mantenimiento}`; // Mostrar la fecha
+				                labelFechaMantenimiento.style.display = 'block'; // Mostrar debajo de la imagen "Después"
+				                labelFechaMantenimiento.style.color = 'blue';
 
 				                divAntes.appendChild(imgAntes);
 				                divAntes.appendChild(labelAntes);
+				                divAntes.appendChild(labelFechaMantenimiento);
 				                
 				                // Segunda imagen (Después)
 				                const divDespues = document.createElement('div');
@@ -392,9 +419,16 @@
 				                const labelDespues = document.createElement('label');
 				                labelDespues.innerText = "Después";
 				                labelDespues.style.display = 'block'; // Mostrar debajo de la imagen
+				                
+				             // Crear un nuevo label para la fecha de modificación
+				                const labelFechaModificacion = document.createElement('label');
+				                labelFechaModificacion.innerText = `Fecha de Actualización: ${Ult_Modificacion}`; // Mostrar la fecha
+				                labelFechaModificacion.style.display = 'block'; // Mostrar debajo de la imagen "Después"
+				                labelFechaModificacion.style.color = 'blue'; // Estilo opcional
 
 				                divDespues.appendChild(imgDespues);
 				                divDespues.appendChild(labelDespues);
+				                divDespues.appendChild(labelFechaModificacion);
 				                
 				                // Añadir ambas imágenes con sus etiquetas al contenedor
 				                divContainer.appendChild(divAntes);

@@ -10,4 +10,5 @@ public interface IParadaService {
 	public Parada buscarPorId(Integer id);
 	public void eliminaParada(Integer id);
 	public List<Parada> buscarParadaPorIdCorredor(Integer id);
+	public Parada getIdParadaPorNombre(String nombreParada);
 }

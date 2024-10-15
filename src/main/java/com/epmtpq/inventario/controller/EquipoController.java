@@ -1,7 +1,7 @@
 package com.epmtpq.inventario.controller;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -82,31 +82,13 @@ public class EquipoController implements Serializable {
 			return "No se encontró la parada";
 		}
 
-		List<EquipoDTO> equipoDTOs = parada.getListaEquipo().stream()
-				.map(equipo -> new EquipoDTO(
-						equipo.getIdEquipo(), 
-						equipo.getSerial(), 
-						equipo.getMarca(),
-						equipo.getHost_Name(), 
-						equipo.getModelo(), 
-						equipo.getIP(), 
-						equipo.getVersion(),
-						equipo.getPuertos_Disponibles_Fibra(),
-						equipo.getPuertos_Usados_Fibra(),
-						equipo.getPuertos_Disponibles_Cobre(),
-						equipo.getPuertos_Usados_Cobre(),
-						equipo.getCod_Bien(),
-						equipo.getUlt_Actividad(),						
-						equipo.getEstado(), 
-						equipo.getCriticidad(), 
-						equipo.getRegistroDeCambio(),
-						equipo.getMantenimiento(), 
-						equipo.getTipoEquipo(),
-						equipo.getPathMinio(),
-						equipo.getDescripcion(),
-						equipo.getUlt_Modificacion(), 
-						equipo.getFkParada().getId()))
-				.collect(Collectors.toList());
+		List<EquipoDTO> equipoDTOs = parada.getListaEquipo().stream().map(equipo -> new EquipoDTO(equipo.getIdEquipo(),
+				equipo.getSerial(), equipo.getMarca(), equipo.getHost_Name(), equipo.getModelo(), equipo.getIP(),
+				equipo.getVersion(), equipo.getPuertos_Disponibles_Fibra(), equipo.getPuertos_Usados_Fibra(),
+				equipo.getPuertos_Disponibles_Cobre(), equipo.getPuertos_Usados_Cobre(), equipo.getCod_Bien(),
+				equipo.getUlt_Actividad(), equipo.getEstado(), equipo.getCriticidad(), equipo.getRegistroDeCambio(),
+				equipo.getMantenimiento(), equipo.getTipoEquipo(), equipo.getPathMinio(), equipo.getDescripcion(),
+				equipo.getUlt_Modificacion(), equipo.getFkParada().getId())).collect(Collectors.toList());
 
 		model.addAttribute("ListaEquipo", equipoDTOs);
 
@@ -115,19 +97,29 @@ public class EquipoController implements Serializable {
 	}
 
 	@GetMapping("/nuevoequipo")
-	public String crearEquipo(Model model) {
+	public String crearEquipo(@RequestParam("selectCorredor") String Corredor,
+			@RequestParam("selectParada") String nombreParada, Model model) {
+
+		System.out.println("Corredor: " + Corredor);
+		System.out.println("Parada: " + nombreParada);
+		
 		model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
 		model.addAttribute("listaParada", srvParada.listaParada());
 		model.addAttribute("criticidades", Equipo.EquipoCriticidad.values());
 		model.addAttribute("estados", Equipo.EstadoEquipo.values());
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
-		Equipo nuevo = new Equipo();
+		model.addAttribute("carpetaCorredor", Corredor);
+		model.addAttribute("carpetaParada", nombreParada);
+		
+		Equipo nuevo = new Equipo();		
+
 		model.addAttribute("nuevo", nuevo);
+
 		return "/equipo/nuevoEquipo";
 	}
 
-	@GetMapping("/nuevoequipo/{idEquipo}/{fkParada}")
-	public String editarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable Integer fkParada,
+	@GetMapping("/editarequipo/{idEquipo}/{fkParada}")
+	public String editarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable("fkParada") Integer fkParada,
 			Model model) {
 		Equipo existe = null;
 		String carpetaParada = "";
@@ -137,7 +129,7 @@ public class EquipoController implements Serializable {
 			Parada parada = srvParada.buscarPorId(fkParada);
 			carpetaCorredor = parada.getFkCorredor().getNombre();
 			carpetaParada = parada.getNombre();
-			
+
 		} else {
 			return "redirect:/listaequipo";
 		}
@@ -163,44 +155,71 @@ public class EquipoController implements Serializable {
 	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo,
 			@RequestParam("carpetaCorredor") String carpetaCorredor,
 			@RequestParam("carpetaParada") String carpetaParada,
+			
 			@RequestParam("file") MultipartFile file) {
 
 		try {
-				if (!file.isEmpty()) {
-					
+//			if (!file.isEmpty()) {
+
 //					String nombreOriginal = file.getOriginalFilename();
-					int idEquipo = nuevo.getIdEquipo();
-					String nombreFoto = Integer.toString(idEquipo);
+				int idEquipo = nuevo.getIdEquipo();
+				// mayor a 0 viene del boton modificar
+				if (idEquipo > 0) {
 					
-					System.out.println(nombreFoto);
-										
-					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, nombreFoto, file);
+					String carpetaEquipo = Integer.toString(idEquipo);
+					System.out.println(carpetaEquipo);					
 					
-					System.out.println("Archivo subido con éxito: " + nombreFoto);
-															
+					nuevo.setUlt_Modificacion(LocalDate.now());
+					Equipo equipo = srv.buscarPorId(idEquipo);
+					nuevo.setFkParada(equipo.getFkParada());
+					srv.insertarEquipo(nuevo);
+
+					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
+
+					System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+
+					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
+				// si es igual a 0 viene de nuevo
+				} else if (idEquipo == 0) {
 					
-					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada);					
+					Parada parada = srvParada.getIdParadaPorNombre(carpetaParada);
+					nuevo.setFkParada(parada);
+					nuevo.setUlt_Modificacion(LocalDate.now());					
+					Equipo equipo = srv.insertarEquipo(nuevo);
+
+					String carpetaEquipo = Integer.toString(equipo.getIdEquipo());
+					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
 					
-				}else {
-					
-					System.out.println("El archivo está vacío.");					
+					String pathMinio = carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo + "/";
+					int idEquipoInsertado = equipo.getIdEquipo();
+					srv.actualizarPathMinio(pathMinio, idEquipoInsertado);					
+
+					System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+
+					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
 				}
+
+//			} else {
+//
+//				System.out.println("El archivo está vacío.");
+//			}
 		} catch (Exception e) {
 			// TODO: handle exception
 			e.printStackTrace();
 		}
-		
-		nuevo.setUlt_Modificacion(LocalDateTime.now());			
-		srv.insertarEquipo(nuevo);
-		
+
 		return "redirect:/listaequipo";
 	}
 
-	@RequestMapping("/eliminarequipo/{idEquipo}")
-	public String eliminarEquipo(@PathVariable("idEquipo") Integer idEquipo) {
+	@RequestMapping("/eliminarequipo/{idEquipo}/{fkParada}")
+	public String eliminarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable("fkParada") Integer fkParada) {
 		// TODO: process POST request
 		if (idEquipo > 0) {
+			
 			srv.eliminarEquipo(idEquipo);
+			
+			
+			
 		}
 
 		return "redirect:/listaequipo";

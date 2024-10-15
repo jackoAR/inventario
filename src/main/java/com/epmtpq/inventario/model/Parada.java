@@ -25,6 +25,7 @@ public class Parada implements Serializable{/**
 	
 	@ManyToOne
 	private Corredor fkCorredor;
+	
 	@OneToMany(mappedBy = "fkParada")
 	private List<Equipo> ListaEquipo = new ArrayList<>();
 	

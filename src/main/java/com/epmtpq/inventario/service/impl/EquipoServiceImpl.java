@@ -16,9 +16,8 @@ public class EquipoServiceImpl implements IEquipoService{
 	private IEquipoRepository repo;
 	
 	@Override
-	public void insertarEquipo(Equipo nuevo) {
-		// TODO Auto-generated method stub
-		repo.save(nuevo);
+	public Equipo insertarEquipo(Equipo nuevo) {
+		return repo.save(nuevo);
 	}
 
 	@Override
@@ -37,6 +36,12 @@ public class EquipoServiceImpl implements IEquipoService{
 	public void eliminarEquipo(Integer id) {
 		// TODO Auto-generated method stub
 		repo.deleteById(id);
+	}
+
+	@Override
+	public void actualizarPathMinio(String pathMinio, Integer id) {
+		// TODO Auto-generated method stub
+		repo.actualizarPathMinio(pathMinio, id);
 	}
 
 }

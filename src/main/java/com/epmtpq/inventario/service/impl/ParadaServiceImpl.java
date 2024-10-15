@@ -45,4 +45,10 @@ public class ParadaServiceImpl implements IParadaService{
 		return repo.buscarParadaPorIdCorredor(id);
 	}
 
+	@Override
+	public Parada getIdParadaPorNombre(String nombreParada) {
+		// TODO Auto-generated method stub
+		return repo.getIdParadaPorNombre(nombreParada);
+	}
+
 }
