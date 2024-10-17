@@ -196,6 +196,8 @@ public class ImagenServiceImpl implements IImagenService {
                         throw new RuntimeException("Error while fetching object metadata", e);
                     }
                 })
+             // Filtrar archivos con extensiones válidas
+                .filter(item -> item.objectName().matches(".*\\.(jpg|jpeg|png|gif|bmp)$"))
                 .sorted((item1, item2) -> item2.lastModified().compareTo(item1.lastModified())) // Ordena por la fecha de modificación, de más reciente a más antigua
                 .collect(Collectors.toList());
 		
@@ -212,8 +214,10 @@ public class ImagenServiceImpl implements IImagenService {
 					.expiry(7, TimeUnit.DAYS)  // La URL es válida por 7 días
 					.build());
 			
-			System.out.println("Encontrado: " + item.objectName());
-			photoUrls.add(objectUrl);
+			if(!objectUrl.isEmpty()) {
+				System.out.println("Encontrado: " + item.objectName());
+				photoUrls.add(objectUrl);
+			}
 		}
 		System.out.println("Total de fotos encontradas: " + photoUrls.size());
 		return photoUrls;
