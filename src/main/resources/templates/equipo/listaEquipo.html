@@ -44,50 +44,51 @@
 							<h1 class="page-header">Equipo</h1>
 						</div>
 					</div>
-					
+
+
+					<input type="hidden" id="hiddenCorredor" name="carpetaCorredor"
+						th:value="${corredor}"> <input type="hidden"
+						id="hiddenParada" name="carpetaParada" th:value="${parada}">
+					<input type="hidden" id="hiddenIdCorredor" name="idCorredor"
+						th:value="${idCorredor}">
+
+
 					<form th:action="@{/nuevoequipo}" method="get">
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="mb-3">
-								<label class="form-label">Corredor</label> 
-								<select
-									id="corredorId" 
-									onchange="enviarCorredorId(this.value)"
-									class="form-select">
-									<option value="0">-Seleccione-</option>
-									<option th:each="corredor: ${listaCorredor}"
-										th:text="${corredor.Nombre}" th:value="${corredor.Id}"></option>
-								</select>
+						<div class="row">
+							<div class="col-lg-12">
+								<div class="mb-3">
+									<label class="form-label">Corredor</label> <select
+										id="corredorId" class="form-select">
+										<option value="0">-Seleccione-</option>
+										<option th:each="corredor: ${listaCorredor}"
+											th:text="${corredor.Nombre}" th:value="${corredor.Id}"></option>
+									</select>
+								</div>
+							</div>
+							<div class="col-lg-12">
+								<div class="mb-3">
+									<label class="form-label">Parada</label> <select id="paradaId"
+										class="form-select" onchange="enviarIdParada(this.value)">
+										<option value="0">-Seleccione-</option>
+										<option></option>
+									</select>
+								</div>
 							</div>
 						</div>
-						<div class="col-lg-12">
-							<div class="mb-3">
-								<label class="form-label">Parada</label>
-								<select 
-									id="paradaId"
-									class="form-select" 
-									onchange="enviarIdParada(this.value)">
-									<option value="0">-Seleccione-</option>
-									<option></option>
-								</select>
-							</div>
-						</div>
-					</div>
-					
-					<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
-					<div id="hiddenInputContainer"></div>
-					<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
-					<div id="hiddenInputContainer1"></div>
-					
-					<div id="agregar" class="row">
-						<div class="col-lg-12">
-							<button type="submit"
-									class="btn btn-success">
+
+						<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
+						<div id="hiddenInputContainer"></div>
+						<!-- AQUI SE AGREGARA EL INPUT HIDDEN -->
+						<div id="hiddenInputContainer1"></div>
+
+						<div id="agregar" class="row">
+							<div class="col-lg-12">
+								<button id="newButton" type="submit" class="btn btn-success">
 									<i class="fa fa-plus"></i>
-							</button>
+								</button>
+							</div>
 						</div>
-					</div>
-					
+
 					</form>
 					<!-- /.row -->
 					<div id="equipoTableContainer" class="table-responsive">
@@ -104,14 +105,32 @@
 
 				</div>
 			</div>
+
+			<script th:inline="javascript">
+		        /* Thymeleaf inserta el valor de idCorredor aquí */
+		        let idCorredorDesdeControlador = /*[[${idCorredor}]]*/ null;
+		        
+		        let idParadaDesdeControlador = /*[[${idParada}]]*/ '0';
+		        console.log("Valor de idParada desde el servidor: ", idParadaDesdeControlador);
+		        // Mostrar el valor en la consola del navegador
+		        console.log("Valor de idCorredor desde el servidor: ", idCorredorDesdeControlador);
+		  
+		    </script>
+			<script th:src="@{/scripts/cargarEquipos.js}" defer></script>
+			<script th:src="@{/scripts/cargarSelectParada.js}" defer></script>
+			<script th:src="@{/scripts/iniFilter.js}" defer></script>
 			<script th:src="@{/scripts/selectCorredor.js}" defer></script>
 			<script th:src="@{/scripts/selectParada.js}" defer></script>
-			
+
 			<script th:inline="javascript">
 			
 					function enviarCorredorId(corredorId) {
 						
 						if (corredorId !== "0") {
+							
+							const divContainer = document.getElementById('foto-container');
+				            divContainer.innerHTML = ''; // Limpiar el div contenedor de insertar las imágenes
+				            
 							// Llamada fetch para enviar el id al controlador
 							fetch(`/api/photos/cargarSelectParada/${corredorId}`, {
 								method: 'GET', // Usa GET si solo estás enviando el id como parte de la URL
@@ -147,7 +166,7 @@
 				            paradaSelect.innerHTML = '<option value="0">-Seleccione-</option>';
 						}
 					}
-		
+					
 					function enviarIdParada(paradaId) {
 					    if (paradaId !== "0") {
 					        // Hacemos la solicitud al controlador
@@ -371,7 +390,7 @@
 				        })
 				        .then(photoUrls => {
 				        	const divContainer = document.getElementById('foto-container');
-				            divContainer.innerHTML = ''; // Limpiar el div antes de insertar las imágenes
+				            divContainer.innerHTML = ''; // Limpiar el div contenedor de insertar las imágenes
 				            
 				         // Comprobar si no hay imágenes para mostrar
 				            if (photoUrls.length === 0) {
@@ -392,11 +411,48 @@
 				                const imgAntes = document.createElement('img');
 				                imgAntes.src = photoUrls[1]; // Primer URL
 				                imgAntes.alt = "Imagen anterior del equipo";
-				                imgAntes.style.maxWidth = "50%";
+				                imgAntes.style.maxWidth = "75%";
 				                imgAntes.style.display = 'block'; // Para que el label esté debajo
 				                const labelAntes = document.createElement('label');
 				                labelAntes.innerText = "Antes";
 				                labelAntes.style.display = 'block'; // Mostrar debajo de la imagen
+
+				                const deleteButton1 = document.createElement('button');
+				                deleteButton1.textContent = 'Eliminar';
+				                deleteButton1.addEventListener('click', function() {
+				                	const url1 = photoUrls[1];
+				                	const filename = url1.split('/').pop().split('?')[0];
+				                	console.log(filename);       	
+				                	
+				                	
+				                	// Hacer una petición DELETE usando fetch
+				                    fetch(`/api/photos/eliminarimg/${idEquipo}/${filename}`, {
+				                        method: 'DELETE',
+				                    })
+				                    .then(response => {
+				                        if (response.ok) {
+				                            return response.text();
+				                        }
+				                        throw new Error('Error al eliminar la foto');
+				                    })
+				                    .then(data => {
+				                        alert('Foto eliminada: ' + filename);
+				                        console.log('Respuesta del servidor: ', data);
+										imgAntes.remove();
+										labelFechaMantenimiento.remove();
+										deleteButton1.remove();
+				                        
+				                        const noImagesMessageDivA = document.createElement('p');
+				                        noImagesMessageDivA.innerText = "Imagen eliminada.";
+				                        noImagesMessageDivA.style.color = "red"; // Cambiar color del texto a rojo
+				                        noImagesMessageDivA.style.textAlign = "center";
+				                        noImagesMessageDivA.style.fontSize = "18px";
+				                        divAntes.appendChild(noImagesMessageDivA);
+				                    })
+				                    .catch(error => {
+				                        console.error('Error:', error);
+				                    });
+				                });			                
 				                
 				             // Crear un nuevo label para la fecha de modificación
 				                const labelFechaMantenimiento = document.createElement('label');
@@ -407,6 +463,7 @@
 				                divAntes.appendChild(imgAntes);
 				                divAntes.appendChild(labelAntes);
 				                divAntes.appendChild(labelFechaMantenimiento);
+				                divAntes.appendChild(deleteButton1);
 				                
 				                // Segunda imagen (Después)
 				                const divDespues = document.createElement('div');
@@ -414,11 +471,49 @@
 				                const imgDespues = document.createElement('img');
 				                imgDespues.src = photoUrls[0]; // Segundo URL
 				                imgDespues.alt = "Imagen reciente del equipo";
-				                imgDespues.style.maxWidth = "50%";
+				                imgDespues.style.maxWidth = "75%";
 				                imgDespues.style.display = 'block'; // Para que el label esté debajo
 				                const labelDespues = document.createElement('label');
 				                labelDespues.innerText = "Después";
 				                labelDespues.style.display = 'block'; // Mostrar debajo de la imagen
+				             
+				                //Crear boton eliminar para imagen "Despues"   
+				                const deleteButton2 = document.createElement('button');
+				                deleteButton2.textContent = 'Eliminar';
+				                deleteButton2.addEventListener('click', function() {
+				                	const url = photoUrls[0];
+				                	const filename = url.split('/').pop().split('?')[0];
+				                	console.log(filename);
+				                	
+				                	// Hacer una petición DELETE usando fetch
+				                    fetch(`/api/photos/eliminarimg/${idEquipo}/${filename}`, {
+				                        method: 'DELETE',
+				                    })
+				                    .then(response => {
+				                        if (response.ok) {
+				                            return response.text();
+				                        }
+				                        throw new Error('Error al eliminar la foto');
+				                    })
+				                    .then(data => {
+				                        alert('Foto eliminada: ' + filename);
+				                        console.log('Respuesta del servidor: ', data);
+										imgDespues.remove();
+										labelFechaModificacion.remove();
+										deleteButton2.remove();
+				                        
+				                        const noImagesMessageDivD = document.createElement('p');
+				                        noImagesMessageDivD.innerText = "Imagen eliminada.";
+				                        noImagesMessageDivD.style.color = "red"; // Cambiar color del texto a rojo
+				                        noImagesMessageDivD.style.textAlign = "center";
+				                        noImagesMessageDivD.style.fontSize = "18px";
+				                        divDespues.appendChild(noImagesMessageDivD);
+				                    })
+				                    .catch(error => {
+				                        console.error('Error:', error);
+				                    });
+				                });	
+				                	
 				                
 				             // Crear un nuevo label para la fecha de modificación
 				                const labelFechaModificacion = document.createElement('label');
@@ -429,6 +524,7 @@
 				                divDespues.appendChild(imgDespues);
 				                divDespues.appendChild(labelDespues);
 				                divDespues.appendChild(labelFechaModificacion);
+				                divDespues.appendChild(deleteButton2);
 				                
 				                // Añadir ambas imágenes con sus etiquetas al contenedor
 				                divContainer.appendChild(divAntes);
@@ -440,14 +536,21 @@
 				                const imgActual = document.createElement('img');
 				                imgActual.src = photoUrls[0];
 				                imgActual.alt = "Imagen única del equipo";
-				                imgActual.style.maxWidth = "50%";
+				                imgActual.style.maxWidth = "75%";
 				                imgActual.style.display = 'block';
 				                const labelActual = document.createElement('label');
 				                labelActual.innerText = "Actual";
-				                labelActual.style.display = 'block'; 
+				                labelActual.style.display = 'block';
+				                
+				             // Crear un nuevo label para la fecha de modificación
+				                const labelFechaModificacion = document.createElement('label');
+				                labelFechaModificacion.innerText = `Fecha de Actualización: ${Ult_Modificacion}`; // Mostrar la fecha
+				                labelFechaModificacion.style.display = 'block'; // Mostrar debajo de la imagen "Después"
+				                labelFechaModificacion.style.color = 'blue'; // Estilo opcional
 
 				                divActual.appendChild(imgActual);
 				                divActual.appendChild(labelActual);
+				                divActual.appendChild(labelFechaModificacion);
 				                
 				             	// Añadir la imagen con su etiqueta al contenedor
 				                divContainer.appendChild(divActual);			                

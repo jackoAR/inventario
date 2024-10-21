@@ -14,7 +14,7 @@ public interface IImagenService {
 //	public void eliminarImagen(Integer id);
 	public String uploadPhoto(String corredor, String parada, String filename, MultipartFile file) throws Exception;
 	public InputStream downloadPhoto(String fileName) throws Exception;
-	public String deletePhoto(String filename) throws Exception;
+	public String deletePhoto(String pathMinio, String filename) throws Exception;
 	public List<String> listPhotosInFolder(String carpetaCorredor, String carpetaParada, String carpetaEquipo) throws Exception;
 	public FileResponse getFile(String filename) throws Exception;
 	public List<InputStream> listaFotosOrdenadoPorFecha(String pathFolder) throws Exception;

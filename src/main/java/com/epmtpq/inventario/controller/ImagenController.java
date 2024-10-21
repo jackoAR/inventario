@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.epmtpq.inventario.model.Corredor;
+import com.epmtpq.inventario.model.Equipo;
 import com.epmtpq.inventario.model.Parada;
 import com.epmtpq.inventario.model.ParadaDTO;
 import com.epmtpq.inventario.service.ICorredorService;
+import com.epmtpq.inventario.service.IEquipoService;
 import com.epmtpq.inventario.service.IImagenService;
 import com.epmtpq.inventario.service.IParadaService;
 
@@ -39,6 +41,8 @@ public class ImagenController implements Serializable {
 	private ICorredorService srvCorredor;
 	@Autowired
 	private IParadaService srvParada;
+	@Autowired
+	private IEquipoService srvEquipo;
 
 //	@PostMapping("/upload")
 //	public ResponseEntity<String> uploadPhoto(@RequestParam("file") MultipartFile file) {
@@ -69,10 +73,16 @@ public class ImagenController implements Serializable {
 //
 //	}
 
-	@DeleteMapping("/delete/{filename}")
-	public ResponseEntity<String> deletePhoto(@PathVariable String filename) {
+	@DeleteMapping("/eliminarimg/{idEquipo}/{filename}")
+	public ResponseEntity<String> deletePhoto(@PathVariable("idEquipo") Integer idEquipo, @PathVariable("filename") String filename) {
 		try {
-			return ResponseEntity.ok(minioService.deletePhoto(filename));
+			Equipo equipo = srvEquipo.buscarPorId(idEquipo);
+			String pathMinio = equipo.getPathMinio();
+			System.out.println("Path en la BD: " + pathMinio);
+			System.out.println("Nombre del arcivo para eliminar: " + filename);
+			
+			
+			return ResponseEntity.ok(minioService.deletePhoto(pathMinio,filename));
 		} catch (Exception e) {
 			return ResponseEntity.status(500).body("Error deleting file: " + e.getMessage());
 		}

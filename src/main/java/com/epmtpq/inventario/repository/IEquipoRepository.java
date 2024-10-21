@@ -17,4 +17,5 @@ public interface IEquipoRepository extends JpaRepository<Equipo, Integer>{
 	@Modifying
 	@Query("update Equipo e set e.PathMinio = ?1 where e.idEquipo = ?2")
 	public void actualizarPathMinio(String pathMinio, Integer id);
+	
 }

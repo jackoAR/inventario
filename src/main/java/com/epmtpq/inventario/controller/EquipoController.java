@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.epmtpq.inventario.model.Equipo;
 import com.epmtpq.inventario.model.EquipoDTO;
@@ -42,12 +43,25 @@ public class EquipoController implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@GetMapping("/listaequipo")
-	public String verEquipo(Model model) {
+	public String verEquipo(Model model,
+			@RequestParam(value = "corredorFromNuevoEquipo", required = false) String corredor,
+			@RequestParam(value = "paradaFromNuevoEquipo", required = false) String parada,
+			@RequestParam(value = "idParadaFromNuevoEquipo", required = false) Integer idParada) {
 
-		model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
+		Parada paradaObj = srvParada.buscarPorId(idParada);
+
+		if (paradaObj != null) {
+			model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
+			model.addAttribute("corredor", corredor);
+			model.addAttribute("parada", parada);
+			model.addAttribute("idCorredor", paradaObj.getFkCorredor().getId());
+			model.addAttribute("idParada", idParada);
+		} else {
+
+			model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
+		}
 
 		return "/equipo/listaEquipo";
-
 	}
 
 	/*
@@ -102,7 +116,7 @@ public class EquipoController implements Serializable {
 
 		System.out.println("Corredor: " + Corredor);
 		System.out.println("Parada: " + nombreParada);
-		
+
 		model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
 		model.addAttribute("listaParada", srvParada.listaParada());
 		model.addAttribute("criticidades", Equipo.EquipoCriticidad.values());
@@ -110,8 +124,8 @@ public class EquipoController implements Serializable {
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
 		model.addAttribute("carpetaCorredor", Corredor);
 		model.addAttribute("carpetaParada", nombreParada);
-		
-		Equipo nuevo = new Equipo();		
+
+		Equipo nuevo = new Equipo();
 
 		model.addAttribute("nuevo", nuevo);
 
@@ -147,6 +161,10 @@ public class EquipoController implements Serializable {
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
 		model.addAttribute("carpetaCorredor", carpetaCorredor);
 		model.addAttribute("carpetaParada", carpetaParada);
+		// envio id parada a la pagina nuevo equipo para que lo guarde en un input
+		// hidden
+		model.addAttribute("idParada", fkParada);
+
 		return "/equipo/nuevoEquipo";
 
 	}
@@ -154,50 +172,56 @@ public class EquipoController implements Serializable {
 	@PostMapping("/guardarequipo")
 	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo,
 			@RequestParam("carpetaCorredor") String carpetaCorredor,
-			@RequestParam("carpetaParada") String carpetaParada,
-			
-			@RequestParam("file") MultipartFile file) {
+			@RequestParam("carpetaParada") String carpetaParada, @RequestParam("file") MultipartFile file,
+			@RequestParam("idParada") Integer idParada, RedirectAttributes redirectAtributes) {
 
 		try {
 //			if (!file.isEmpty()) {
 
 //					String nombreOriginal = file.getOriginalFilename();
-				int idEquipo = nuevo.getIdEquipo();
-				// mayor a 0 viene del boton modificar
-				if (idEquipo > 0) {
-					
-					String carpetaEquipo = Integer.toString(idEquipo);
-					System.out.println(carpetaEquipo);					
-					
-					nuevo.setUlt_Modificacion(LocalDate.now());
-					Equipo equipo = srv.buscarPorId(idEquipo);
-					nuevo.setFkParada(equipo.getFkParada());
-					srv.insertarEquipo(nuevo);
+			int idEquipo = nuevo.getIdEquipo();
+			// mayor a 0 viene del boton modificar
+			if (idEquipo > 0) {
 
-					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
+				String carpetaEquipo = Integer.toString(idEquipo);
+				System.out.println(carpetaEquipo);
 
-					System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+				nuevo.setUlt_Modificacion(LocalDate.now());
+				// YA NO ES NECESARIO VOLVER A RELACIONAR LA CLASE EQUIPO CON PARADA POR QUE EN
+				// EL FORMULARIO SE TOMA
+				// EL FKPARADA
+//					Equipo equipo = srv.buscarPorId(idEquipo);
+//					nuevo.setFkParada(equipo.getFkParada());
+				srv.insertarEquipo(nuevo);
 
-					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
+				srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
+
+				System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+
+				System.out.println(
+						"DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
+
 				// si es igual a 0 viene de nuevo
-				} else if (idEquipo == 0) {
-					
-					Parada parada = srvParada.getIdParadaPorNombre(carpetaParada);
-					nuevo.setFkParada(parada);
-					nuevo.setUlt_Modificacion(LocalDate.now());					
-					Equipo equipo = srv.insertarEquipo(nuevo);
+			} else if (idEquipo == 0) {
 
-					String carpetaEquipo = Integer.toString(equipo.getIdEquipo());
-					srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
-					
-					String pathMinio = carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo + "/";
-					int idEquipoInsertado = equipo.getIdEquipo();
-					srv.actualizarPathMinio(pathMinio, idEquipoInsertado);					
+				Parada parada = srvParada.getIdParadaPorNombre(carpetaParada);
+				nuevo.setFkParada(parada);
+				nuevo.setUlt_Modificacion(LocalDate.now());
+				Equipo equipo = srv.insertarEquipo(nuevo);
 
-					System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+				String carpetaEquipo = Integer.toString(equipo.getIdEquipo());
+				srvImage.uploadPhoto(carpetaCorredor, carpetaParada, carpetaEquipo, file);
 
-					System.out.println("DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
-				}
+				String pathMinio = carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo + "/";
+				int idEquipoInsertado = equipo.getIdEquipo();
+				srv.actualizarPathMinio(pathMinio, idEquipoInsertado);
+
+				System.out.println("Archivo subido con éxito: " + carpetaEquipo);
+
+				System.out.println(
+						"DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
+
+			}
 
 //			} else {
 //
@@ -208,18 +232,21 @@ public class EquipoController implements Serializable {
 			e.printStackTrace();
 		}
 
+		// se redireccionan los atributos
+		redirectAtributes.addAttribute("corredorFromNuevoEquipo", carpetaCorredor);
+		redirectAtributes.addAttribute("paradaFromNuevoEquipo", carpetaParada);
+		redirectAtributes.addAttribute("idParadaFromNuevoEquipo", idParada);
 		return "redirect:/listaequipo";
 	}
 
 	@RequestMapping("/eliminarequipo/{idEquipo}/{fkParada}")
-	public String eliminarEquipo(@PathVariable("idEquipo") Integer idEquipo, @PathVariable("fkParada") Integer fkParada) {
+	public String eliminarEquipo(@PathVariable("idEquipo") Integer idEquipo,
+			@PathVariable("fkParada") Integer fkParada) {
 		// TODO: process POST request
 		if (idEquipo > 0) {
-			
+
 			srv.eliminarEquipo(idEquipo);
-			
-			
-			
+
 		}
 
 		return "redirect:/listaequipo";

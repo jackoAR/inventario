@@ -26,10 +26,17 @@
 						<div class="row">
 							<div class="col-lg-4">
 								<form th:action="@{/guardarequipo}" th:object="${nuevo}" method="post" enctype="multipart/form-data">
-
-									<input type="hidden" th:field="*{idEquipo}">									
+									<!-- Campos que se vuelven a guardar obligatoriamente y que el usuario no los modifica -->
+									<input type="hidden" th:field="*{idEquipo}">	
+									<input type="hidden" th:field="*{PathMinio}">
+									<input type="hidden" th:field="*{fkParada.id}">
+									
+									<!-- ESTOS CAMPOS SON ENVIADOS DESDE CONTROLADOR EQUIPO nuevoequipo y editarequipo -->								
 									<input type="hidden" id="hiddenCorredor" name="carpetaCorredor" th:value="${carpetaCorredor}">									
 									<input type="hidden" id="hiddenParada" name="carpetaParada" th:value="${carpetaParada}">
+									<input type="hidden" id="hiddenIdParada" name="idParada" th:value="${idParada}">
+									
+									
 									
 									<!--  
 									<div class="mb-3">

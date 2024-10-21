@@ -55,11 +55,11 @@ public class ImagenServiceImpl implements IImagenService {
 	}
 
 	@Override
-	public String deletePhoto(String filename) throws Exception {
+	public String deletePhoto(String pathMinio, String filename) throws Exception {
 		// TODO Auto-generated method stub
 		minioClient.removeObject(RemoveObjectArgs.builder()
 				.bucket(bucketName)				
-				.object(filename)
+				.object(pathMinio + filename)
 				.build());
 		return "File deleted successfully: " + filename;
 	}

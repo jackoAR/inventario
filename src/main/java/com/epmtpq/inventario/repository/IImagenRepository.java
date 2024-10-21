@@ -14,5 +14,4 @@ public interface IImagenRepository extends JpaRepository<Imagen, Integer>{
 	public List<Imagen> listaImagen();
 	@Query("select i from Imagen i where i.idImagen=?1")
 	public Imagen buscarPorId(Integer id);
-
 }
