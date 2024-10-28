@@ -116,6 +116,9 @@ public class EquipoController implements Serializable {
 
 		System.out.println("Corredor: " + Corredor);
 		System.out.println("Parada: " + nombreParada);
+		
+		Parada parada = srvParada.getIdParadaPorNombre(nombreParada);
+		Integer idParada = parada.getId();
 
 		model.addAttribute("listaCorredor", srvCorredor.listaCorredor());
 		model.addAttribute("listaParada", srvParada.listaParada());
@@ -124,6 +127,7 @@ public class EquipoController implements Serializable {
 		model.addAttribute("tipos", Equipo.TipoEquipo.values());
 		model.addAttribute("carpetaCorredor", Corredor);
 		model.addAttribute("carpetaParada", nombreParada);
+		model.addAttribute("idParada", idParada);
 
 		Equipo nuevo = new Equipo();
 
@@ -173,7 +177,7 @@ public class EquipoController implements Serializable {
 	public String guardarEquipo(@ModelAttribute("nuevo") Equipo nuevo,
 			@RequestParam("carpetaCorredor") String carpetaCorredor,
 			@RequestParam("carpetaParada") String carpetaParada, @RequestParam("file") MultipartFile file,
-			@RequestParam("idParada") Integer idParada, RedirectAttributes redirectAtributes) {
+			@RequestParam(value = "idParada" , required = false) Integer idParada, RedirectAttributes redirectAtributes) {
 
 		try {
 //			if (!file.isEmpty()) {
@@ -202,7 +206,7 @@ public class EquipoController implements Serializable {
 						"DIRECCION DE UPLOAD IMG: " + carpetaCorredor + "/" + carpetaParada + "/" + carpetaEquipo);
 
 				// si es igual a 0 viene de nuevo
-			} else if (idEquipo == 0) {
+			} else if (idEquipo == 0 && idParada == null) {
 
 				Parada parada = srvParada.getIdParadaPorNombre(carpetaParada);
 				nuevo.setFkParada(parada);
